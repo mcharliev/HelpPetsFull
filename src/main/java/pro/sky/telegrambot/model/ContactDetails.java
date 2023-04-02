@@ -11,7 +11,7 @@ public class ContactDetails {
     private Integer id;
     private Long chatId;
     private String name;
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     public Integer getId() {
         return id;
@@ -37,11 +37,11 @@ public class ContactDetails {
         this.name = name;
     }
 
-    public Integer getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Integer phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
