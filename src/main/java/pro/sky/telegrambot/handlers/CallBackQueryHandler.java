@@ -20,6 +20,7 @@ public class CallBackQueryHandler implements Handler {
         this.telegramBot = telegramBot;
     }
 
+    @Override
     public void handle(Update update) {
         Long chatId = update.callbackQuery().message().chat().id();
         CallbackQuery callbackQuery = update.callbackQuery();
@@ -35,11 +36,15 @@ public class CallBackQueryHandler implements Handler {
                 break;
             }
             case "Кнопка 3": {
-                sendTextMessage(chatId, "Нажата кнопка 3");
+                infoKeyboard.showReportMenu(chatId);
                 break;
             }
+            case "Кнопка 2.11":
+            case "Кнопка 1.5":
+            case "Кнопка 3.4":
             case "Кнопка 4": {
-                sendTextMessage(chatId, "Нажата кнопка 4");
+//                callVolunteer(chatId);
+                infoKeyboard.showVolunteerMenu(chatId);
                 break;
             }
             case "Кнопка 1.1": {
@@ -58,12 +63,10 @@ public class CallBackQueryHandler implements Handler {
                 saveContactDetails(chatId);
                 break;
             }
-            case "Кнопка 1.5":
-            case "Кнопка 2.11": {
-                //тут надо будет звать волонтера
-            }
             case "Кнопка 1.6":
-            case "Кнопка 2.12": {
+            case "Кнопка 2.12":
+            case "Кнопка 3.3":
+            case "Кнопка 4.1": {
                 infoKeyboard.showStartMenu(chatId);
                 break;
             }
@@ -101,6 +104,14 @@ public class CallBackQueryHandler implements Handler {
             }
             case "Кнопка 2.9": {
                 showReasonsForRefusingToAdoptDog(chatId);
+                break;
+            }
+            case "Кнопка 3.1": {
+                showDailyReportForm(chatId);
+                break;
+            }
+            case "Кнопка 3.2": {
+                showSendReport(chatId);
                 break;
             }
         }
@@ -222,5 +233,25 @@ public class CallBackQueryHandler implements Handler {
                 " квартирах, людям без документов тоже откажут забрать собаку из приюта");
     }
 
+    public void showDailyReportForm(Long chatId) {
+        sendTextMessage(chatId, "В данном разделе люди которые забрали" +
+                " животное из приюта должны предоставить  информацию о том, как животное чувствует себя" +
+                " на новом месте. Отчеты принимаются в виде фотографий и текста. В тексте просим Вас " +
+                " предоставить информацию о рационе животного, общее самочувствие, изменение в поведении:" +
+                " отказ от старых привычек, приобретение новых. Текстовую информацию отправляйте одним сообщением.");
+    }
+
+    public void showSendReport(Long chatId) {
+        sendTextMessage(chatId, "Прикрепите пожалуйста фотографии, и напишите информацию согласно форме" +
+                " предоставления отчета, и нажмите отправить.");
+    }
+
+     /* метод зовет волонтора, в константе записан chatId волонтера, когда пользователь нажимает на кнопку
+      позвать волонтера бот высылает волонтеру уведомление чтобы он связался с пользователем*/
+    public void callVolunteer(Long chatId) {
+        Long VOLUNTEER_CHAT_ID = 512213990L;
+        sendTextMessage(VOLUNTEER_CHAT_ID, "Пользователь id: " + chatId +
+                " просит связи с волантером, пожалуйста свяжитесь с ним");
+    }
 }
 

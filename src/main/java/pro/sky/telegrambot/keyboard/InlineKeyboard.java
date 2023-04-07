@@ -51,11 +51,12 @@ public class InlineKeyboard {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         inlineKeyboardMarkup.addRow(firstButton, secondButton);
         inlineKeyboardMarkup.addRow(thirdButton, fourthButton);
-        inlineKeyboardMarkup.addRow(fifthButton,sixthButton);
+        inlineKeyboardMarkup.addRow(fifthButton, sixthButton);
         SendMessage sendMessage = new SendMessage(chatId, text).replyMarkup(inlineKeyboardMarkup);
         telegramBot.execute(sendMessage);
     }
-    public void showBureaucraticMenu(Long chatId){
+
+    public void showBureaucraticMenu(Long chatId) {
         String text = " Вы зашли в раздел бюрократической информации," +
                 " и бытовых вопросов, даннгый раздел поможет Вам получить полную информацию" +
                 " о том, как предстоит подготовиться человеку ко встрече с новым членом семьи.";
@@ -97,6 +98,35 @@ public class InlineKeyboard {
         inlineKeyboardMarkup.addRow(seventhButton, eightButton);
         inlineKeyboardMarkup.addRow(ninthButton, tenthButton);
         inlineKeyboardMarkup.addRow(eleventhButton, twelfthButton);
+        SendMessage sendMessage = new SendMessage(chatId, text).replyMarkup(inlineKeyboardMarkup);
+        telegramBot.execute(sendMessage);
+    }
+
+    public void showReportMenu(Long chatId) {
+        String text = " Вы зашли в раздел предоставления отчетов. ";
+        InlineKeyboardButton firstButton = new InlineKeyboardButton("Прислать форму ежедневного отчета");
+        firstButton.callbackData("Кнопка 3.1");
+        InlineKeyboardButton secondButton = new InlineKeyboardButton("Отправить отчет");
+        secondButton.callbackData("Кнопка 3.2");
+        InlineKeyboardButton thirdButton = new InlineKeyboardButton("Вернуться на главное меню");
+        thirdButton.callbackData("Кнопка 3.3");
+        InlineKeyboardButton fourthButton = new InlineKeyboardButton("Позвать волонтера");
+        fourthButton.callbackData("Кнопка 3.4");
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        inlineKeyboardMarkup.addRow(firstButton, secondButton);
+        inlineKeyboardMarkup.addRow(thirdButton,fourthButton);
+        SendMessage sendMessage = new SendMessage(chatId, text).replyMarkup(inlineKeyboardMarkup);
+        telegramBot.execute(sendMessage);
+    }
+    public void showVolunteerMenu(Long chatId) {
+        String text = "Добрый день, меня зовут волантер Гриша, я могу помочь вам со следующими функциями." +
+                "\n1.Если вы хотите отправить очет о прибывании животного на новом месте, для этого мне" +
+                "сначала необходимо вас зарегестрировать, если вы являетесь хозяином собаки пожалуйста " +
+                "напишите в чат команду: \n/saveDogOwner";
+        InlineKeyboardButton firstButton = new InlineKeyboardButton("Вернуться на главное меню");
+        firstButton.callbackData("Кнопка 4.1");
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        inlineKeyboardMarkup.addRow(firstButton);
         SendMessage sendMessage = new SendMessage(chatId, text).replyMarkup(inlineKeyboardMarkup);
         telegramBot.execute(sendMessage);
     }
