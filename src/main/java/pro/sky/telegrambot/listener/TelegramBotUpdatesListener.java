@@ -67,7 +67,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     // @Scheduled(cron = "0 0/1 * * * *") //на первой секунде каждой минуты
-    @Scheduled(fixedDelay = 10_000L)
+    @Scheduled(fixedDelay = 59_000L)
     public void informOwner() {
 
         List<Owner> owners = ownerService.findAllOwners();

@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface OwnerRepository extends JpaRepository<Owner, Integer> {
     Owner getOwnerByChatId(Long chatID);
-    List<Owner> findAll();
+
 }

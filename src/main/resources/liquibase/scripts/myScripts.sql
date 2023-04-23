@@ -25,7 +25,8 @@ CREATE TABLE if not exists dogs
     id         SERIAL NOT NULL PRIMARY KEY,
     birth_date DATE,
     name       TEXT,
-    owners_id INTEGER
+    breed      TEXT,
+    owners_id  INTEGER
 );
 
 CREATE TABLE if not exists reports
@@ -34,5 +35,5 @@ CREATE TABLE if not exists reports
     photo_report  BYTEA,
     string_report TEXT,
     last_report   timestamp,
-    owners_id INTEGER
+    owners_id     INTEGER
 )

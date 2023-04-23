@@ -14,15 +14,26 @@ public class Dog {
     private Integer id;
 
     @Column(name = "birth_date")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
 
     @Column(name = "name")
     private String name;
 
+    @Column(name = "breed")
+    private String breed;
+
     @OneToOne
     @JoinColumn(name = "owners_id")
     private Owner owner;
+
+    public String getBreed() {
+        return breed;
+    }
+
+    public void setBreed(String breed) {
+        this.breed = breed;
+    }
 
     public Integer getId() {
         return id;
@@ -61,7 +72,7 @@ public class Dog {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Dog dog = (Dog) o;
-        return Objects.equals(id, dog.id) && Objects.equals(birthDate, dog.birthDate) && Objects.equals(name, dog.name) && Objects.equals(owner, dog.owner);
+        return  Objects.equals(birthDate, dog.birthDate) && Objects.equals(name, dog.name) && Objects.equals(owner, dog.owner);
     }
 
     @Override

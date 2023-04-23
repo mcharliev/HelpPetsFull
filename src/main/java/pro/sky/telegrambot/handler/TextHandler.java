@@ -35,11 +35,7 @@ public class TextHandler implements Handler {
         Message message = update.message();
         Long chatId = message.chat().id();
         String text = message.text();
-        String name = message.chat().firstName();
         Matcher matcher = pattern.matcher(text);
-        LocalDateTime dateOfStartProbation = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-
-
         if ("/start".equals(text)) {
             InlineKeyboard inlineKeyboard = new InlineKeyboard(telegramBot);
             inlineKeyboard.showStartMenu(chatId);
@@ -49,13 +45,6 @@ public class TextHandler implements Handler {
         } else {
             Owner owner = ownerService.findOwnerByChatId(chatId);
             if (owner != null && text.length() > 30) {
-//                owner.setStringReport(text);
-//                owner.setDateOfLastReport(dateOfStartProbation);
-                ownerService.saveOwner(owner);
-//                if (owner.getPhotoReport() == null) {
-//                    sendMessage(chatId, "Вы успешно загрузили текстовый отчет ," +
-//                            " пожалуйста не забудьте предоставить фото отчет");
-//                }
             } else {
                 sendMessage(chatId, "Отчет недостаточно подробный, пожалуйста заполните отчет подробнее");
             }

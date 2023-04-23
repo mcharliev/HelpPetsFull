@@ -16,7 +16,7 @@ public class Owner {
     private Integer id;
 
     @Column(name = "chat_id")
-    private Long chatId;
+    private long chatId;
 
     @Column(name = "name")
     private String name;
@@ -47,7 +47,6 @@ public class Owner {
         if (periodExtend >= 0 && periodExtend < 15)
             this.periodExtend = periodExtend;
     }
-
 
     public LocalDateTime getDateOfStartProbation() {
         return dateOfStartProbation;
