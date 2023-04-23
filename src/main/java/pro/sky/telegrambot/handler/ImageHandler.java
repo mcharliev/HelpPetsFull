@@ -1,4 +1,4 @@
-package pro.sky.telegrambot.handlers;
+package pro.sky.telegrambot.handler;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
@@ -7,10 +7,10 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.GetFileResponse;
+import org.springframework.util.StringUtils;
 import pro.sky.telegrambot.model.Owner;
 import pro.sky.telegrambot.service.OwnerService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -31,21 +31,21 @@ public class ImageHandler implements Handler {
         Message message = update.message();
         PhotoSize photoSize = message.photo()[message.photo().length - 1];
         LocalDateTime dateOfLastRepost = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        GetFileResponse getFileResponse = telegramBot.execute(
-                new GetFile(photoSize.fileId()));
-        try {
-            if (owner.getPhotoReport() != null) {
-                owner.setPhotoReport(null);
-                owner.setPhotoReport(telegramBot.getFileContent(getFileResponse.file()));
-                owner.setDateOfLastReport(dateOfLastRepost);
-            } else {
-                owner.setPhotoReport(telegramBot.getFileContent(getFileResponse.file()));
-                owner.setDateOfLastReport(dateOfLastRepost);
-                informAboutUploadingPhoto(chatId);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        GetFileResponse getFileResponse = telegramBot.execute(new GetFile(photoSize.fileId()));
+        String extension = StringUtils.getFilenameExtension(getFileResponse.file().filePath());
+//        try {
+//            if (owner.getPhotoReport() != null) {
+//                owner.setPhotoReport(null);
+//                owner.setPhotoReport(telegramBot.getFileContent(getFileResponse.file()));
+//                owner.setDateOfLastReport(dateOfLastRepost);
+//            } else {
+//                owner.setPhotoReport(telegramBot.getFileContent(getFileResponse.file()));
+//                owner.setDateOfLastReport(dateOfLastRepost);
+//                informAboutUploadingPhoto(chatId);
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         ownerService.saveOwner(owner);
     }
 

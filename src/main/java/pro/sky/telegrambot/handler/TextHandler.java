@@ -1,14 +1,12 @@
-package pro.sky.telegrambot.handlers;
+package pro.sky.telegrambot.handler;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import pro.sky.telegrambot.enams.ProbationaryStatus;
 import pro.sky.telegrambot.keyboard.InlineKeyboard;
 import pro.sky.telegrambot.model.ContactDetails;
 import pro.sky.telegrambot.model.Owner;
-import pro.sky.telegrambot.enams.PetType;
 import pro.sky.telegrambot.service.ContactDetailsService;
 import pro.sky.telegrambot.service.OwnerService;
 
@@ -40,36 +38,24 @@ public class TextHandler implements Handler {
         String name = message.chat().firstName();
         Matcher matcher = pattern.matcher(text);
         LocalDateTime dateOfStartProbation = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        LocalDateTime dateOfEndProbation = dateOfStartProbation.plusDays(30);
+
 
         if ("/start".equals(text)) {
             InlineKeyboard inlineKeyboard = new InlineKeyboard(telegramBot);
             inlineKeyboard.showStartMenu(chatId);
-        } else if ("/saveDogOwner".equals(text)) {
-            PetType petType = PetType.DOG;
-            ownerService.saveNewDogOwner(chatId,
-                    name,
-                    petType,
-                    dateOfStartProbation,
-                    dateOfEndProbation,
-                    dateOfStartProbation,
-                    ProbationaryStatus.ACTIVE
-            );
-            sendMessage(chatId, "Вы успешно зарегестрировались, ваши данные" +
-                    "\nваше имя: " + name + " \nтип животного: " + petType);
         } else if (matcher.find()) {
             String result = matcher.group(0);
             findMatchesAndSaveInBd(result, chatId);
         } else {
             Owner owner = ownerService.findOwnerByChatId(chatId);
             if (owner != null && text.length() > 30) {
-                owner.setStringReport(text);
-                owner.setDateOfLastReport(dateOfStartProbation);
+//                owner.setStringReport(text);
+//                owner.setDateOfLastReport(dateOfStartProbation);
                 ownerService.saveOwner(owner);
-                if (owner.getPhotoReport() == null) {
-                    sendMessage(chatId, "Вы успешно загрузили текстовый отчет ," +
-                            " пожалуйста не забудьте предоставить фото отчет");
-                }
+//                if (owner.getPhotoReport() == null) {
+//                    sendMessage(chatId, "Вы успешно загрузили текстовый отчет ," +
+//                            " пожалуйста не забудьте предоставить фото отчет");
+//                }
             } else {
                 sendMessage(chatId, "Отчет недостаточно подробный, пожалуйста заполните отчет подробнее");
             }

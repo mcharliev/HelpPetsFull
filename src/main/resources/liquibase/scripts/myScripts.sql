@@ -2,25 +2,37 @@
 
 -- changeset mcharliev:1
 
-CREATE TABLE detail_task
+CREATE TABLE if not exists detail_task
 (
-    id          SERIAL NOT NULL PRIMARY KEY,
-    name        TEXT,
-    chat_id     BIGINT,
+    id           SERIAL NOT NULL PRIMARY KEY,
+    name         TEXT,
+    chat_id      BIGINT,
     phone_Number TEXT
 );
 
-CREATE TABLE owners_reports
+CREATE TABLE if not exists owners
+(
+    id                  SERIAL NOT NULL PRIMARY KEY,
+    chat_id             BIGINT,
+    name                TEXT,
+    start_probation     timestamp,
+    end_probation       timestamp,
+    probationary_status TEXT,
+    period_extend       INTEGER
+);
+CREATE TABLE if not exists dogs
+(
+    id         SERIAL NOT NULL PRIMARY KEY,
+    birth_date DATE,
+    name       TEXT,
+    owners_id INTEGER
+);
+
+CREATE TABLE if not exists reports
 (
     id            SERIAL NOT NULL PRIMARY KEY,
-    chat_id       BIGINT,
-    name          TEXT,
-    pet_type      TEXT,
-    string_report TEXT,
     photo_report  BYTEA,
-    last_report timestamp,
-    start_probation timestamp,
-    end_probation timestamp,
-    probationary_status TEXT,
-    period_extend INTEGER
-);
+    string_report TEXT,
+    last_report   timestamp,
+    owners_id INTEGER
+)

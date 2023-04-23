@@ -1,4 +1,4 @@
-package pro.sky.telegrambot.enams;
+package pro.sky.telegrambot.enam;
 
 public enum ProbationaryStatus {
     ACTIVE,

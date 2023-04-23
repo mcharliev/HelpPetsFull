@@ -5,8 +5,16 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InlineKeyboard {
     private final TelegramBot telegramBot;
+    private final String command1 = "Кнопка 1" ;
+
+    public String getCommand1() {
+        return command1;
+    }
 
     public InlineKeyboard(TelegramBot telegramBot) {
         this.telegramBot = telegramBot;
@@ -17,7 +25,7 @@ public class InlineKeyboard {
                 " Вас приветствует помощник приложения Help-Pets," +
                 " пожалуйста выберите пункт из представленного меню ";
         InlineKeyboardButton firstButton = new InlineKeyboardButton("Узнать информацию о приюте");
-        firstButton.callbackData("Кнопка 1");
+        firstButton.callbackData(command1);
         InlineKeyboardButton secondButton = new InlineKeyboardButton("Как взять собаку из приюта");
         secondButton.callbackData("Кнопка 2");
         InlineKeyboardButton thirdButton = new InlineKeyboardButton("Прислать отчет о питомце");
@@ -114,19 +122,7 @@ public class InlineKeyboard {
         fourthButton.callbackData("Кнопка 3.4");
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         inlineKeyboardMarkup.addRow(firstButton, secondButton);
-        inlineKeyboardMarkup.addRow(thirdButton,fourthButton);
-        SendMessage sendMessage = new SendMessage(chatId, text).replyMarkup(inlineKeyboardMarkup);
-        telegramBot.execute(sendMessage);
-    }
-    public void showVolunteerMenu(Long chatId) {
-        String text = "Добрый день, меня зовут волантер Гриша, я могу помочь вам со следующими функциями." +
-                "\n1.Если вы хотите отправить очет о прибывании животного на новом месте, для этого мне" +
-                "сначала необходимо вас зарегестрировать, если вы являетесь хозяином собаки пожалуйста " +
-                "напишите в чат команду: \n/saveDogOwner";
-        InlineKeyboardButton firstButton = new InlineKeyboardButton("Вернуться на главное меню");
-        firstButton.callbackData("Кнопка 4.1");
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        inlineKeyboardMarkup.addRow(firstButton);
+        inlineKeyboardMarkup.addRow(thirdButton, fourthButton);
         SendMessage sendMessage = new SendMessage(chatId, text).replyMarkup(inlineKeyboardMarkup);
         telegramBot.execute(sendMessage);
     }

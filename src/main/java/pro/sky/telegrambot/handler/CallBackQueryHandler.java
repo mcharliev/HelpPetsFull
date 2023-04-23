@@ -1,4 +1,4 @@
-package pro.sky.telegrambot.handlers;
+package pro.sky.telegrambot.handler;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.CallbackQuery;
@@ -29,7 +29,6 @@ public class CallBackQueryHandler implements Handler {
         switch (data) {
             case "Кнопка 1": {
                 infoKeyboard.showInfoShelterMenu(chatId);
-                break;
             }
             case "Кнопка 2": {
                 infoKeyboard.showBureaucraticMenu(chatId);
@@ -43,8 +42,7 @@ public class CallBackQueryHandler implements Handler {
             case "Кнопка 1.5":
             case "Кнопка 3.4":
             case "Кнопка 4": {
-//                callVolunteer(chatId);
-                infoKeyboard.showVolunteerMenu(chatId);
+                callVolunteer(chatId);
                 break;
             }
             case "Кнопка 1.1": {

@@ -1,4 +1,4 @@
-package pro.sky.telegrambot.handlers;
+package pro.sky.telegrambot.handler;
 
 import com.pengrad.telegrambot.model.Update;
 

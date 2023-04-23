@@ -1,14 +1,15 @@
 package pro.sky.telegrambot.model;
 
-import pro.sky.telegrambot.enams.PetType;
-import pro.sky.telegrambot.enams.ProbationaryStatus;
+import pro.sky.telegrambot.enam.ProbationaryStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Objects;
 
 
 @Entity
-@Table(name = "owners_reports")
+@Table(name = "owners")
 public class Owner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,18 +21,11 @@ public class Owner {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "pet_type")
-    @Enumerated(EnumType.STRING)
-    private PetType petType;
+    @OneToOne(mappedBy = "owner")
+    private Dog dogs;
 
-    @Column(name = "photo_report")
-    private byte[] photoReport;
-
-    @Column(name = "string_report")
-    private String stringReport;
-
-    @Column(name = "last_report")
-    private LocalDateTime dateOfLastReport;
+    @OneToMany(mappedBy = "owner")
+    private Collection<Report> reports;
 
     @Column(name = "start_probation")
     private LocalDateTime dateOfStartProbation;
@@ -54,13 +48,6 @@ public class Owner {
             this.periodExtend = periodExtend;
     }
 
-    public LocalDateTime getDateOfLastReport() {
-        return dateOfLastReport;
-    }
-
-    public void setDateOfLastReport(LocalDateTime dateOfLastReport) {
-        this.dateOfLastReport = dateOfLastReport;
-    }
 
     public LocalDateTime getDateOfStartProbation() {
         return dateOfStartProbation;
@@ -110,29 +97,47 @@ public class Owner {
         this.name = name;
     }
 
-    public PetType getPetType() {
-        return petType;
+    public Dog getDogs() {
+        return dogs;
     }
 
-    public void setPetType(PetType petType) {
-        this.petType = petType;
+    public void setDogs(Dog dogs) {
+        this.dogs = dogs;
     }
 
-    public byte[] getPhotoReport() {
-        return photoReport;
+    public Collection<Report> getReports() {
+        return reports;
     }
 
-    public void setPhotoReport(byte[] photoReport) {
-        this.photoReport = photoReport;
+    public void setReports(Collection<Report> reports) {
+        this.reports = reports;
     }
 
-    public String getStringReport() {
-        return stringReport;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Owner owner = (Owner) o;
+        return periodExtend == owner.periodExtend && Objects.equals(id, owner.id) && Objects.equals(chatId, owner.chatId) && Objects.equals(name, owner.name) && Objects.equals(dogs, owner.dogs) && Objects.equals(reports, owner.reports) && Objects.equals(dateOfStartProbation, owner.dateOfStartProbation) && Objects.equals(dateOfEndProbation, owner.dateOfEndProbation) && probationaryStatus == owner.probationaryStatus;
     }
 
-    public void setStringReport(String stringReport) {
-        this.stringReport = stringReport;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, chatId, name, dogs, reports, dateOfStartProbation, dateOfEndProbation, probationaryStatus, periodExtend);
     }
 
-
+    @Override
+    public String toString() {
+        return "Owner{" +
+                "id=" + id +
+                ", chatId=" + chatId +
+                ", name='" + name + '\'' +
+                ", dogs=" + dogs +
+                ", reports=" + reports +
+                ", dateOfStartProbation=" + dateOfStartProbation +
+                ", dateOfEndProbation=" + dateOfEndProbation +
+                ", probationaryStatus=" + probationaryStatus +
+                ", periodExtend=" + periodExtend +
+                '}';
+    }
 }
