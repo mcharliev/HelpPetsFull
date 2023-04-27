@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "reports")
@@ -33,16 +34,16 @@ public class Report {
         this.id = id;
     }
 
-    public byte[] getPhotoReport() {
-        return photoReport;
+    public Optional<byte[]> getPhotoReport() {
+        return Optional.ofNullable(photoReport);
     }
 
     public void setPhotoReport(byte[] photoReport) {
         this.photoReport = photoReport;
     }
 
-    public String getStringReport() {
-        return stringReport;
+    public Optional<String> getStringReport() {
+        return Optional.ofNullable(stringReport);
     }
 
     public void setStringReport(String stringReport) {

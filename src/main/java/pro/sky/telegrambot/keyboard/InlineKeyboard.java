@@ -10,11 +10,6 @@ import java.util.List;
 
 public class InlineKeyboard {
     private final TelegramBot telegramBot;
-    private final String command1 = "Кнопка 1" ;
-
-    public String getCommand1() {
-        return command1;
-    }
 
     public InlineKeyboard(TelegramBot telegramBot) {
         this.telegramBot = telegramBot;
@@ -25,7 +20,7 @@ public class InlineKeyboard {
                 " Вас приветствует помощник приложения Help-Pets," +
                 " пожалуйста выберите пункт из представленного меню ";
         InlineKeyboardButton firstButton = new InlineKeyboardButton("Узнать информацию о приюте");
-        firstButton.callbackData(command1);
+        firstButton.callbackData("Кнопка 1");
         InlineKeyboardButton secondButton = new InlineKeyboardButton("Как взять собаку из приюта");
         secondButton.callbackData("Кнопка 2");
         InlineKeyboardButton thirdButton = new InlineKeyboardButton("Прислать отчет о питомце");

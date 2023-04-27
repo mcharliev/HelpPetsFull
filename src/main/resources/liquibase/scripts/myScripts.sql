@@ -26,7 +26,7 @@ CREATE TABLE if not exists dogs
     birth_date DATE,
     name       TEXT,
     breed      TEXT,
-    owners_id  INTEGER
+    owners_id INTEGER
 );
 
 CREATE TABLE if not exists reports

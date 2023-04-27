@@ -11,4 +11,8 @@ public class ErrorDetails {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public ErrorDetails(String message) {
+        this.message = message;
+    }
 }

@@ -1,10 +1,13 @@
 package pro.sky.telegrambot.model;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import pro.sky.telegrambot.enam.ProbationaryStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -21,10 +24,8 @@ public class Owner {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(mappedBy = "owner")
-    private Dog dogs;
-
     @OneToMany(mappedBy = "owner")
+    @JsonIgnore
     private Collection<Report> reports;
 
     @Column(name = "start_probation")
@@ -38,6 +39,10 @@ public class Owner {
     private ProbationaryStatus probationaryStatus;
     @Column(name = "period_extend")
     private int periodExtend;
+
+    @OneToOne(mappedBy = "owner")
+    @JsonIgnore
+    private Dog dogs;
 
     public int getPeriodExtend() {
         return periodExtend;
@@ -94,6 +99,10 @@ public class Owner {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setChatId(long chatId) {
+        this.chatId = chatId;
     }
 
     public Dog getDogs() {

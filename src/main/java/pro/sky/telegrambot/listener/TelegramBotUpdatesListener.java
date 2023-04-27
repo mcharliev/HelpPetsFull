@@ -14,10 +14,14 @@ import pro.sky.telegrambot.handler.Handler;
 import pro.sky.telegrambot.handler.ImageHandler;
 import pro.sky.telegrambot.handler.TextHandler;
 import pro.sky.telegrambot.model.Owner;
+import pro.sky.telegrambot.model.Report;
 import pro.sky.telegrambot.service.ContactDetailsService;
 import pro.sky.telegrambot.service.OwnerService;
+import pro.sky.telegrambot.service.ReportService;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 
@@ -25,15 +29,19 @@ import java.util.List;
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private final ContactDetailsService contactDetailsService;
     private final OwnerService ownerService;
+
+    private final ReportService reportService;
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     private final TelegramBot telegramBot;
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot,
                                       ContactDetailsService contactDetailsService,
-                                      OwnerService ownerService) {
+                                      OwnerService ownerService,
+                                      ReportService reportService) {
         this.telegramBot = telegramBot;
         this.contactDetailsService = contactDetailsService;
         this.ownerService = ownerService;
+        this.reportService = reportService;
     }
 
     @PostConstruct
@@ -52,11 +60,14 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     return;
                 }
                 if (update.message().text() != null) {
-                    Handler textHandler = new TextHandler(telegramBot, contactDetailsService, ownerService);
+                    Handler textHandler = new TextHandler(telegramBot,
+                            contactDetailsService,
+                            ownerService,
+                            reportService);
                     textHandler.handle(update);
                 }
                 if (update.message().photo() != null) {
-                    Handler imageHandler = new ImageHandler(telegramBot, ownerService);
+                    Handler imageHandler = new ImageHandler(telegramBot, ownerService, reportService);
                     imageHandler.handle(update);
                 }
             });
@@ -66,28 +77,22 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    // @Scheduled(cron = "0 0/1 * * * *") //на первой секунде каждой минуты
-    @Scheduled(fixedDelay = 59_000L)
+    @Scheduled(fixedDelay = 10_000L)
     public void informOwner() {
-
         List<Owner> owners = ownerService.findAllOwners();
-
+        List<Report> reports = reportService.findAllReports();
         informOwnerWhenHePassed(owners);
-
         informOwnerWhenHeNotPassed(owners);
-
         informOwnerWhenHeBadReporting(owners);
-//
-//        showInfoWhenFailedDeadline(owners);
-
+        checkDeadline(reports);
         informOwnerWhenDeadlineExtended(owners);
     }
 
-    /**
-     * Если овнер прошел исп срок, волонтер меняет статус на PASSED, метод проверяет всех овнеров на
+
+    /* Если овнер прошел исп срок, волонтер меняет статус на PASSED, метод проверяет всех овнеров на
      * данный статус если овнеры найдены, бот информирует их о прохождении исп срока, далее метод меняет статус
-     * у всех овнеровна FINALLY_PASSED чтобы метод больше не информировал овнеров о прохождении исп срока.
-     */
+     * у всех овнеровна FINALLY_PASSED чтобы метод больше не информировал овнеров о прохождении исп срока.*/
+
     private void informOwnerWhenHePassed(List<Owner> owners) {
         owners.stream().filter(element -> element.getProbationaryStatus().equals(ProbationaryStatus.PASSED))
                 .peek(element -> telegramBot.execute(
@@ -98,11 +103,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 .forEach(ownerService::saveOwner);
     }
 
-    /**
-     * Если овнер прошел исп срок, волонтер меняет статус на NOT_PASSED, метод проверяет всех овнеров на данный статус
+
+    /*  Если овнер прошел исп срок, волонтер меняет статус на NOT_PASSED, метод проверяет всех овнеров на данный статус
      * если овнеры найдены, бот информирует их о прохождении исп срока, далее метод меняет статус у всех овнеров
-     * на FINALLY_PASSED чтобы метод больше не информировал овнеров о прохождении исп срока.
-     */
+     * на FINALLY_PASSED чтобы метод больше не информировал овнеров о прохождении исп срока.*/
+
     private void informOwnerWhenHeNotPassed(List<Owner> owners) {
         owners.stream().filter(element -> element.getProbationaryStatus().equals(ProbationaryStatus.NOT_PASSED))
                 .peek(element -> telegramBot.execute(
@@ -114,12 +119,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 .forEach(ownerService::saveOwner);
     }
 
-    /**
-     * Если просмотрев отчеты овнеров волонтер решил, что овнер предоставляет отчеты плохо, волонтер меняет
+
+    /* Если просмотрев отчеты овнеров волонтер решил, что овнер предоставляет отчеты плохо, волонтер меняет
      * статус овнера на BAD_REPORTING, далее метод находит овнеров с таким статусом бот информирует овнера, что он
      * предоставляет отчеты плохо и просит исправиться, далее метод меняет статус у всех овнеров
      * на UNSATISFACTORY чтобы метод больше не информировал овнеров о прохождении исп срока
-     */
+     * */
+
     private void informOwnerWhenHeBadReporting(List<Owner> owners) {
         owners.stream().filter(element -> element.getProbationaryStatus().equals(ProbationaryStatus.BAD_REPORTING))
                 .peek(element -> telegramBot.execute(
@@ -132,34 +138,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 .forEach(ownerService::saveOwner);
     }
 
-    /**
-     * дату последнего отчета я увеличиваю на один день, если увеличенная дата будет равна настоящей дате
-     * бот проинформирует пользователя, что он плохо предоставляет отчеты. Далее дату последнего отчета я увеличиваю
-     * на два дня если увеличенная дата будет равна настоящей дате бот свяжется с волантером и предоставит ему
-     * данные на пользователя который плохо заполняет отчеты
-     */
-//    private void showInfoWhenFailedDeadline(List<Owner> owners) {
-//        Long VOLUNTEER_CHAT_ID = 512213990L;
-//        LocalDateTime localDateTimeNow = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-//        owners.forEach(element -> {
-//            if (element.getDateOfLastReport().plusMinutes(1).equals(localDateTimeNow)) {
-//                telegramBot.execute(new SendMessage(element.getChatId(), "Дорогой усыновитель, мы заметили," +
-//                        " что за последние сутки вы предоставляли не подробные отчеты о животном, пожалуйста" +
-//                        " отнеситесь серьезно к предоставлению отчетов"));
-//            } else if (element.getDateOfLastReport().plusMinutes(2).equals(localDateTimeNow)) {
-//                telegramBot.execute(new SendMessage(VOLUNTEER_CHAT_ID, "Пользователь," +
-//                        " по имени: " + element.getName() + " id: " + element.getChatId() + " более двух суток не" +
-//                        " заполнял отчет, пожалуйста свяжитесь с ним"));
-//            }
-//        });
-//    }
 
-    /**
-     * Если волантер решил продлить исп срок овнера, он должен вручную добавить срок продления в бд и
+    /* Если волантер решил продлить исп срок овнера, он должен вручную добавить срок продления в бд и
      * поменять статус усыновителя на EXTENDED. Далее метод проверяет у овнеров срок продления и статус,
      * если срок продления больше 0 и статус равен EXTENDED бот информирует овнера о продлении исп срока. Далее метод
      * перезаписывает статус овнера на FINALLY_EXTENDED, чтобы бот повторно не информировал овнера
-     */
+     * */
+
     private void informOwnerWhenDeadlineExtended(List<Owner> owners) {
         owners.stream().filter(element -> element.getPeriodExtend() > 0
                         && element.getProbationaryStatus().equals(ProbationaryStatus.EXTENDED))
@@ -171,6 +156,48 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 .peek(element -> element.setProbationaryStatus(ProbationaryStatus.FINALLY_EXTENDED))
                 .forEach(ownerService::saveOwner);
     }
+
+
+    /* дату последнего отчета я увеличиваю на один день, если увеличенная дата будет равна настоящей дате
+     * бот проинформирует пользователя, что он плохо предоставляет отчеты. Далее дату последнего отчета я увеличиваю
+     * на два дня, если увеличенная дата будет равна настоящей дате бот свяжется с волантером и предоставит ему
+     * данные на пользователя который плохо заполняет отчеты*/
+
+    private void checkDeadline(List<Report> reports) {
+        LocalDateTime localDateTimeNow = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        reports.forEach(element -> {
+            if (element.getDateOfLastReport().plusMinutes(1).equals(localDateTimeNow)) {
+                informOwner(element.getOwner());
+            } else if (element.getDateOfLastReport().plusMinutes(2).equals(localDateTimeNow)) {
+                informVolunteer(element.getOwner());
+            }
+        });
+    }
+
+
+    /*    если с даты последнего отчета прошел один день, этот метод информирует овнера, чтобы он
+     * заполнял отчеты лучше
+     */
+    private void informOwner(Owner owner) {
+        telegramBot.execute(new SendMessage(owner.getChatId(), "Дорогой усыновитель, мы заметили," +
+                " что за последние сутки вы предоставляли не подробные отчеты о животном, пожалуйста" +
+                " отнеситесь серьезно к предоставлению отчетов"));
+    }
+
+    /* если с даты последнего отчета прошло два дня, этот метод информирует волонтера,
+     * что овнер плохо заполняет отчеты
+     */
+    private void informVolunteer(Owner owner) {
+        Long VOLUNTEER_CHAT_ID = 512213990L;
+        telegramBot.execute(new SendMessage(VOLUNTEER_CHAT_ID, "Пользователь," +
+                " по имени: " + owner.getName() + " id: " + owner.getChatId() + " более двух суток не" +
+                " заполнял отчет, пожалуйста свяжитесь с ним"));
+    }
 }
+
+
+
+
+
 
 

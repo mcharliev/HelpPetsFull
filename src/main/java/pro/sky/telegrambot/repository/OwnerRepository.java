@@ -11,4 +11,6 @@ import java.util.List;
 public interface OwnerRepository extends JpaRepository<Owner, Integer> {
     Owner getOwnerByChatId(Long chatID);
 
+
+    Owner findOwnerById(int id);
 }
