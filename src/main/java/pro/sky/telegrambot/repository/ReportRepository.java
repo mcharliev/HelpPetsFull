@@ -14,4 +14,6 @@ public interface ReportRepository extends JpaRepository<Report,Integer> {
     @Query(value = "SELECT * FROM reports ORDER BY owners_id DESC, id DESC LIMIT 1", nativeQuery = true)
     Report findLastReportByOwnerId(Integer ownerId);
 
+    List<Report> findByOwnerId(Integer ownerId);
+
 }

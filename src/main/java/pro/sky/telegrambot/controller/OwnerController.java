@@ -41,11 +41,11 @@ public class OwnerController {
             },
             tags = "Owners"
     )
-    @PostMapping("/saveOwner")
+    @PostMapping("/saveOwner/{name}/{chatId}")
     public ResponseEntity<?> saveOwner(@Parameter(description = "Owner's name", example = "Alex")
-                                       @RequestParam(required = false) String name,
+                                       @PathVariable(required = false) String name,
                                        @Parameter(description = "Owner's chatId", example = "321583984")
-                                       @RequestParam(required = false) Long chatId) {
+                                       @PathVariable(required = false) Long chatId) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body(ownerService.saveOwnerByNameAndChatId(name, chatId));
@@ -70,11 +70,11 @@ public class OwnerController {
             },
             tags = "Owners"
     )
-    @PutMapping("/extendTrialPeriod")
+    @PutMapping("/extendTrialPeriod/{id}/{days}")
     public ResponseEntity<?> extendProbationaryPeriod(@Parameter(description = "Owner's id", example = "1")
-                                                      @RequestParam(required = false) Integer id,
+                                                      @PathVariable(required = false) Integer id,
                                                       @Parameter(description = "Days", example = "5")
-                                                      @RequestParam(required = false) Integer days) {
+                                                      @PathVariable(required = false) Integer days) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(ownerService.extendProbationaryPeriod(id, days));
         } catch (NotFoundException e) {
@@ -129,9 +129,9 @@ public class OwnerController {
             },
             tags = "Owners"
     )
-    @GetMapping("/findById")
+    @GetMapping("/findById/{id}")
     public ResponseEntity<?> findOwnerById(@Parameter(description = "Owner's id", example = "1")
-                                           @RequestParam(required = false, name = "Owner's id") Integer id) {
+                                           @PathVariable(required = false) Integer id) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(ownerService.findOwnerById(id));
         } catch (NotFoundException e) {

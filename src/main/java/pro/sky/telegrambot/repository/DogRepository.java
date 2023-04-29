@@ -8,4 +8,8 @@ import pro.sky.telegrambot.model.Owner;
 @Repository
 public interface DogRepository extends JpaRepository<Dog, Integer> {
     Dog findDogById(int id);
+
 }
+
+
+

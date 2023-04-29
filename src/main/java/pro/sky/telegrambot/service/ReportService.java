@@ -1,6 +1,7 @@
 package pro.sky.telegrambot.service;
 
 import org.springframework.stereotype.Service;
+import pro.sky.telegrambot.exception.NotFoundException;
 import pro.sky.telegrambot.model.Owner;
 import pro.sky.telegrambot.model.Report;
 import pro.sky.telegrambot.repository.ReportRepository;
@@ -25,8 +26,8 @@ public class ReportService {
     }
 
     public void saveTextInNewReport(String text,
-                                       Owner owner,
-                                       LocalDateTime localDateTime) {
+                                    Owner owner,
+                                    LocalDateTime localDateTime) {
         Report report = new Report();
         report.setStringReport(text);
         report.setOwner(owner);
@@ -35,9 +36,9 @@ public class ReportService {
     }
 
     public void saveTextInExistingReport(Report report,
-                                          String text,
-                                          Owner owner,
-                                          LocalDateTime localDateTime) {
+                                         String text,
+                                         Owner owner,
+                                         LocalDateTime localDateTime) {
         report.setStringReport(text);
         report.setOwner(owner);
         report.setDateOfLastReport(localDateTime);
@@ -45,8 +46,8 @@ public class ReportService {
     }
 
     public void saveImageInNewReport(byte[] image,
-                                        Owner owner,
-                                        LocalDateTime localDateTime) {
+                                     Owner owner,
+                                     LocalDateTime localDateTime) {
         Report report = new Report();
         report.setPhotoReport(image);
         report.setOwner(owner);
@@ -55,16 +56,24 @@ public class ReportService {
     }
 
     public void saveImageInExistingReport(Report report,
-                                           byte[] image,
-                                           Owner owner,
-                                           LocalDateTime localDateTime) {
+                                          byte[] image,
+                                          Owner owner,
+                                          LocalDateTime localDateTime) {
         report.setPhotoReport(image);
         report.setOwner(owner);
         report.setDateOfLastReport(localDateTime);
         saveReport(report);
     }
 
-    public List<Report> findAllReports(){
+    public List<Report> findAllReports() {
         return reportRepository.findAll();
+    }
+
+    public List<Report> findReportsByOwnerId(Integer ownerId) {
+        List<Report> list = reportRepository.findByOwnerId(ownerId);
+        if (list.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return list;
     }
 }

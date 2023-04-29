@@ -77,7 +77,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    @Scheduled(fixedDelay = 10_000L)
+    @Scheduled(fixedDelay = 59_000L)
     public void informOwner() {
         List<Owner> owners = ownerService.findAllOwners();
         List<Report> reports = reportService.findAllReports();
@@ -166,9 +166,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private void checkDeadline(List<Report> reports) {
         LocalDateTime localDateTimeNow = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         reports.forEach(element -> {
-            if (element.getDateOfLastReport().plusMinutes(1).equals(localDateTimeNow)) {
+            if (element.getDateOfLastReport().plusDays(1).equals(localDateTimeNow)) {
                 informOwner(element.getOwner());
-            } else if (element.getDateOfLastReport().plusMinutes(2).equals(localDateTimeNow)) {
+            } else if (element.getDateOfLastReport().plusDays(2).equals(localDateTimeNow)) {
                 informVolunteer(element.getOwner());
             }
         });

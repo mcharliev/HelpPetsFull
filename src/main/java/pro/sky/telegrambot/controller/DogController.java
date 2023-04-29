@@ -72,11 +72,11 @@ public class DogController {
             },
             tags = "Dogs"
     )
-    @PutMapping("/assignDogWithOwner")
+    @PutMapping("/assignDogWithOwner/{ownerId}/{dogId}")
     public ResponseEntity<?> assignDogWithOwner(@Parameter(description = "Owner's id", example = "1")
-                                                @RequestParam(required = false) Integer ownerId,
+                                                @PathVariable(required = false) Integer ownerId,
                                                 @Parameter(description = "Dog's id", example = "2")
-                                                @RequestParam(required = false) Integer dogId) {
+                                                @PathVariable(required = false) Integer dogId) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(dogService.assignDogWithOwner(ownerId, dogId));
         } catch (NotFoundException e) {
@@ -100,9 +100,9 @@ public class DogController {
             },
             tags = "Dogs"
     )
-    @GetMapping("/findDogById")
+    @GetMapping("/findDogById/{id}")
     public ResponseEntity<?> findDogById(@Parameter(description = "Dog's id", example = "1")
-                                         @RequestParam(required = false) Integer id) {
+                                         @PathVariable(required = false) Integer id) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(dogService.findDogById(id));
 
