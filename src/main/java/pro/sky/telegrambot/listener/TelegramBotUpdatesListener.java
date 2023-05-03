@@ -15,6 +15,8 @@ import pro.sky.telegrambot.handler.ImageHandler;
 import pro.sky.telegrambot.handler.TextHandler;
 import pro.sky.telegrambot.model.Owner;
 import pro.sky.telegrambot.model.Report;
+import pro.sky.telegrambot.model.UserContext;
+import pro.sky.telegrambot.repository.UserContextRepository;
 import pro.sky.telegrambot.service.ContactDetailsService;
 import pro.sky.telegrambot.service.OwnerService;
 import pro.sky.telegrambot.service.ReportService;
@@ -33,15 +35,19 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private final ReportService reportService;
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     private final TelegramBot telegramBot;
+    private final UserContextRepository userContextRepository;
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot,
                                       ContactDetailsService contactDetailsService,
                                       OwnerService ownerService,
-                                      ReportService reportService) {
+                                      ReportService reportService,
+                                      UserContextRepository userContextRepository
+    ) {
         this.telegramBot = telegramBot;
         this.contactDetailsService = contactDetailsService;
         this.ownerService = ownerService;
         this.reportService = reportService;
+        this.userContextRepository = userContextRepository;
     }
 
     @PostConstruct
@@ -55,7 +61,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             updates.forEach(update -> {
                 logger.info("Processing update: {}", update);
                 if (update.callbackQuery() != null) {
-                    Handler callBackHandler = new CallBackQueryHandler(telegramBot);
+                    Handler callBackHandler = new CallBackQueryHandler(telegramBot,
+                            userContextRepository);
                     callBackHandler.handle(update);
                     return;
                 }
@@ -63,7 +70,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     Handler textHandler = new TextHandler(telegramBot,
                             contactDetailsService,
                             ownerService,
-                            reportService);
+                            reportService, userContextRepository);
                     textHandler.handle(update);
                 }
                 if (update.message().photo() != null) {
@@ -92,7 +99,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     /* Если овнер прошел исп срок, волонтер меняет статус на PASSED, метод проверяет всех овнеров на
      * данный статус если овнеры найдены, бот информирует их о прохождении исп срока, далее метод меняет статус
      * у всех овнеровна FINALLY_PASSED чтобы метод больше не информировал овнеров о прохождении исп срока.*/
-
     private void informOwnerWhenHePassed(List<Owner> owners) {
         owners.stream().filter(element -> element.getProbationaryStatus().equals(ProbationaryStatus.PASSED))
                 .peek(element -> telegramBot.execute(
@@ -125,7 +131,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
      * предоставляет отчеты плохо и просит исправиться, далее метод меняет статус у всех овнеров
      * на UNSATISFACTORY чтобы метод больше не информировал овнеров о прохождении исп срока
      * */
-
     private void informOwnerWhenHeBadReporting(List<Owner> owners) {
         owners.stream().filter(element -> element.getProbationaryStatus().equals(ProbationaryStatus.BAD_REPORTING))
                 .peek(element -> telegramBot.execute(
@@ -144,7 +149,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
      * если срок продления больше 0 и статус равен EXTENDED бот информирует овнера о продлении исп срока. Далее метод
      * перезаписывает статус овнера на FINALLY_EXTENDED, чтобы бот повторно не информировал овнера
      * */
-
     private void informOwnerWhenDeadlineExtended(List<Owner> owners) {
         owners.stream().filter(element -> element.getPeriodExtend() > 0
                         && element.getProbationaryStatus().equals(ProbationaryStatus.EXTENDED))
@@ -162,7 +166,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
      * бот проинформирует пользователя, что он плохо предоставляет отчеты. Далее дату последнего отчета я увеличиваю
      * на два дня, если увеличенная дата будет равна настоящей дате бот свяжется с волантером и предоставит ему
      * данные на пользователя который плохо заполняет отчеты*/
-
     private void checkDeadline(List<Report> reports) {
         LocalDateTime localDateTimeNow = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         reports.forEach(element -> {

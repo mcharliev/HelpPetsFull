@@ -1,6 +1,5 @@
 package pro.sky.telegrambot.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +70,9 @@ class DogControllerTest {
 
         Owner owner = new Owner();
         Integer ownerId = 2;
+        String ownerName = "Alex";
         owner.setId(ownerId);
-        owner.setName("Alex");
+        owner.setName(ownerName);
 
         Dog dog = new Dog();
         dog.setId(dogId);
@@ -90,11 +90,9 @@ class DogControllerTest {
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.id").value(dogId))
                 .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.breed").value(breed));
-
-        //как тут проверить лежит ли объект в объекте, то есть лежит ли овнер в доге
-//                .andExpect(jsonPath("$.owner").value(owner));
-
+                .andExpect(jsonPath("$.breed").value(breed))
+                .andExpect(jsonPath("$.owner.id").value(owner.getId()))
+                .andExpect(jsonPath("$.owner.name").value(owner.getName()));
     }
 
     @Test

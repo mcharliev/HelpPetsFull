@@ -63,7 +63,7 @@ public class ImageHandler implements Handler {
             /* так как по условию овнеры должны присылать отчеты раз в день, значит отчеты должны быть разграничены по дням,
              * если настоящая дата isBefore последней даты отчета к который прибавлен один день, фото
              * сохраняется  в существующий отчет */
-            if (dateTimeNow.isBefore(report.getDateOfLastReport().plusSeconds(15))) {
+            if (dateTimeNow.isBefore(report.getDateOfLastReport().plusDays(1))) {
                 reportService.saveImageInExistingReport(report,
                         telegramBot.getFileContent(getFileResponse.file()),
                         owner,
@@ -72,7 +72,7 @@ public class ImageHandler implements Handler {
             /* если настоящая дата isAfter последней даты отчета к который прибавлен один день,
              *создается новый отчет и фото сохраняется туда
              */
-            else if (dateTimeNow.isAfter(report.getDateOfLastReport().plusSeconds(15))) {
+            else if (dateTimeNow.isAfter(report.getDateOfLastReport().plusDays(1))) {
                 reportService.saveImageInNewReport(telegramBot.getFileContent(getFileResponse.file()),
                         owner,
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));

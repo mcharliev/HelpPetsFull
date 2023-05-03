@@ -1,13 +1,19 @@
 -- liquibase formatted sql
 
--- changeset mcharliev:1
+-- changeset mcharliev:3
 
 CREATE TABLE if not exists detail_task
 (
     id           SERIAL NOT NULL PRIMARY KEY,
     name         TEXT,
-    chat_id      BIGINT,
     phone_Number TEXT
+);
+
+CREATE TABLE if not exists user_context
+(
+    chat_id     BIGINT PRIMARY KEY,
+    cat_shelter BOOLEAN,
+    dog_shelter BOOLEAN
 );
 
 CREATE TABLE if not exists owners
@@ -26,7 +32,7 @@ CREATE TABLE if not exists dogs
     birth_date DATE,
     name       TEXT,
     breed      TEXT,
-    owners_id INTEGER
+    owners_id  INTEGER
 );
 
 CREATE TABLE if not exists reports
