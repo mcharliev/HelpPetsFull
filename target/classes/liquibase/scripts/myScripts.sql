@@ -1,8 +1,14 @@
 -- liquibase formatted sql
 
--- changeset mcharliev:3
+-- changeset mcharliev:1
 
-CREATE TABLE if not exists detail_task
+CREATE TABLE if not exists dog_shelter_users
+(
+    id           SERIAL NOT NULL PRIMARY KEY,
+    name         TEXT,
+    phone_Number TEXT
+);
+CREATE TABLE if not exists cat_shelter_users
 (
     id           SERIAL NOT NULL PRIMARY KEY,
     name         TEXT,
@@ -27,6 +33,14 @@ CREATE TABLE if not exists owners
     period_extend       INTEGER
 );
 CREATE TABLE if not exists dogs
+(
+    id         SERIAL NOT NULL PRIMARY KEY,
+    birth_date DATE,
+    name       TEXT,
+    breed      TEXT,
+    owners_id  INTEGER
+);
+CREATE TABLE if not exists cats
 (
     id         SERIAL NOT NULL PRIMARY KEY,
     birth_date DATE,

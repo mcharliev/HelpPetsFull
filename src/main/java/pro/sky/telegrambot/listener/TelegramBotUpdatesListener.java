@@ -15,9 +15,9 @@ import pro.sky.telegrambot.handler.ImageHandler;
 import pro.sky.telegrambot.handler.TextHandler;
 import pro.sky.telegrambot.model.Owner;
 import pro.sky.telegrambot.model.Report;
-import pro.sky.telegrambot.model.UserContext;
+import pro.sky.telegrambot.repository.CatShelterUsersRepository;
+import pro.sky.telegrambot.repository.DogShelterUsersRepository;
 import pro.sky.telegrambot.repository.UserContextRepository;
-import pro.sky.telegrambot.service.ContactDetailsService;
 import pro.sky.telegrambot.service.OwnerService;
 import pro.sky.telegrambot.service.ReportService;
 
@@ -29,25 +29,27 @@ import java.util.List;
 
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
-    private final ContactDetailsService contactDetailsService;
     private final OwnerService ownerService;
-
     private final ReportService reportService;
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     private final TelegramBot telegramBot;
     private final UserContextRepository userContextRepository;
+    private final DogShelterUsersRepository dogShelterUsersRepository;
+    private final CatShelterUsersRepository catShelterUsersRepository;
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot,
-                                      ContactDetailsService contactDetailsService,
                                       OwnerService ownerService,
                                       ReportService reportService,
-                                      UserContextRepository userContextRepository
+                                      UserContextRepository userContextRepository,
+                                      DogShelterUsersRepository dogShelterUsersRepository,
+                                      CatShelterUsersRepository catShelterUsersRepository
     ) {
         this.telegramBot = telegramBot;
-        this.contactDetailsService = contactDetailsService;
         this.ownerService = ownerService;
         this.reportService = reportService;
         this.userContextRepository = userContextRepository;
+        this.dogShelterUsersRepository = dogShelterUsersRepository;
+        this.catShelterUsersRepository = catShelterUsersRepository;
     }
 
     @PostConstruct
@@ -68,9 +70,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 }
                 if (update.message().text() != null) {
                     Handler textHandler = new TextHandler(telegramBot,
-                            contactDetailsService,
+                            catShelterUsersRepository,
+                            dogShelterUsersRepository,
                             ownerService,
-                            reportService, userContextRepository);
+                            reportService,
+                            userContextRepository);
                     textHandler.handle(update);
                 }
                 if (update.message().photo() != null) {

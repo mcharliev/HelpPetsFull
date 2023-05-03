@@ -3,15 +3,12 @@ package pro.sky.telegrambot.handler;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import pro.sky.telegrambot.keyboard.InlineKeyboard;
-import pro.sky.telegrambot.model.ContactDetails;
-import pro.sky.telegrambot.model.Owner;
-import pro.sky.telegrambot.model.Report;
-import pro.sky.telegrambot.model.UserContext;
+import pro.sky.telegrambot.model.*;
+import pro.sky.telegrambot.repository.CatShelterUsersRepository;
+import pro.sky.telegrambot.repository.DogShelterUsersRepository;
 import pro.sky.telegrambot.repository.UserContextRepository;
-import pro.sky.telegrambot.service.ContactDetailsService;
 import pro.sky.telegrambot.service.OwnerService;
 import pro.sky.telegrambot.service.ReportService;
 
@@ -23,7 +20,8 @@ import java.util.regex.Pattern;
 
 public class TextHandler implements Handler {
     private final TelegramBot telegramBot;
-    private final ContactDetailsService contactDetailsService;
+    private final DogShelterUsersRepository dogShelterUsersRepository;
+    private final CatShelterUsersRepository catShelterUsersRepository;
     private final OwnerService ownerService;
     private final ReportService reportService;
     private final UserContextRepository userContextRepository;
@@ -31,11 +29,13 @@ public class TextHandler implements Handler {
     private final Pattern pattern = Pattern.compile("\\d{11} [А-я]+");
 
     public TextHandler(TelegramBot telegramBot,
-                       ContactDetailsService contactDetailsService,
+                       CatShelterUsersRepository catShelterUsersRepository,
+                       DogShelterUsersRepository dogShelterUsersRepository,
                        OwnerService ownerService,
                        ReportService reportService, UserContextRepository userContextRepository) {
         this.telegramBot = telegramBot;
-        this.contactDetailsService = contactDetailsService;
+        this.dogShelterUsersRepository = dogShelterUsersRepository;
+        this.catShelterUsersRepository = catShelterUsersRepository;
         this.ownerService = ownerService;
         this.reportService = reportService;
         this.userContextRepository = userContextRepository;
@@ -123,11 +123,23 @@ public class TextHandler implements Handler {
         foundString = foundString.replaceAll(" ", "");
         String phoneNumber = foundString.substring(0, 10);
         String name = foundString.substring(11);
-        ContactDetails contactDetails = new ContactDetails();
-        contactDetails.setChatId(chatId);
-        contactDetails.setPhoneNumber(phoneNumber);
-        contactDetails.setName(name);
-        contactDetailsService.save(contactDetails);
+        boolean dogShelter = userContextRepository.findByChatId(chatId)
+                .map(UserContext::isDogShelter)
+                .orElse(false);
+        boolean catShelter = userContextRepository.findByChatId(chatId)
+                .map(UserContext::isCatShelter)
+                .orElse(false);
+        if (dogShelter) {
+            DogShelterUser dogShelterUser = new DogShelterUser();
+            dogShelterUser.setPhoneNumber(phoneNumber);
+            dogShelterUser.setName(name);
+            dogShelterUsersRepository.save(dogShelterUser);
+        } else if (catShelter) {
+            CatShelterUser catShelterUser = new CatShelterUser();
+            catShelterUser.setPhoneNumber(phoneNumber);
+            catShelterUser.setName(name);
+            catShelterUsersRepository.save(catShelterUser);
+        }
     }
 
     private void sendMessage(Long chatId, String message) {
