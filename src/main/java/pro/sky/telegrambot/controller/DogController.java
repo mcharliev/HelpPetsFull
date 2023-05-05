@@ -13,7 +13,6 @@ import pro.sky.telegrambot.exception.AlreadyExistException;
 import pro.sky.telegrambot.exception.NotFoundException;
 import pro.sky.telegrambot.model.Dog;
 import pro.sky.telegrambot.model.ErrorDetails;
-import pro.sky.telegrambot.model.Owner;
 import pro.sky.telegrambot.service.DogService;
 
 import java.time.LocalDate;

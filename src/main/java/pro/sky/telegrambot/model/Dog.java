@@ -1,6 +1,5 @@
 package pro.sky.telegrambot.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -25,8 +24,8 @@ public class Dog {
     private String breed;
 
     @OneToOne
-    @JoinColumn(name = "owners_id",referencedColumnName = "id")
-    private Owner owner;
+    @JoinColumn(name = "dog_owner_id",referencedColumnName = "id")
+    private DogOwner owner;
 
     public String getBreed() {
         return breed;
@@ -60,11 +59,11 @@ public class Dog {
         this.name = name;
     }
 
-    public Owner getOwner() {
+    public DogOwner getOwner() {
         return owner;
     }
 
-    public void setOwner(Owner owner) {
+    public void setOwner(DogOwner owner) {
         this.owner = owner;
     }
 

@@ -11,10 +11,10 @@ import java.time.LocalDate;
 @Service
 public class CatService {
     private final CatRepository catRepository;
-    private final OwnerService ownerService;
+    private final CatOwnerService ownerService;
 
     public CatService(CatRepository catRepository,
-                      OwnerService ownerService) {
+                      CatOwnerService ownerService) {
         this.catRepository = catRepository;
         this.ownerService = ownerService;
     }

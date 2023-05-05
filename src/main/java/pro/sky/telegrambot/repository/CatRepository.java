@@ -7,5 +7,4 @@ import pro.sky.telegrambot.model.Cat;
 @Repository
 public interface CatRepository extends JpaRepository<Cat,Integer> {
     Cat findCatById(Integer id);
-
 }

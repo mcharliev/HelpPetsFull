@@ -11,46 +11,45 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pro.sky.telegrambot.exception.NotFoundException;
 import pro.sky.telegrambot.model.ErrorDetails;
 
-import pro.sky.telegrambot.model.Report;
-import pro.sky.telegrambot.service.ReportService;
+import pro.sky.telegrambot.model.DogOwnerReport;
+import pro.sky.telegrambot.service.DogOwnerReportService;
 
 
 @RestController
-public class ReportController {
-    private final ReportService reportService;
+public class DogOwnerReportController {
+    private final DogOwnerReportService reportService;
 
-    public ReportController(ReportService reportService) {
+    public DogOwnerReportController(DogOwnerReportService reportService) {
         this.reportService = reportService;
     }
 
-    @Operation(summary = "Search reports by owner id",
+    @Operation(summary = "Search dog owner report by dog owner id",
             responses = {
                     @ApiResponse(
                             responseCode = "202",
-                            description = "Found reports",
+                            description = "Found report",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Report.class))
+                                    schema = @Schema(implementation = DogOwnerReport.class))
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Reports with this owner id not found!")
+                            description = "Dog owner report with this owner id not found!")
             },
-            tags = "Reports"
+            tags = "Dog owner report"
     )
-    @GetMapping(value = "/reports/{ownerId}")
+    @GetMapping(value = "/dogReports/{ownerId}")
     public ResponseEntity<?> findReportsByOwnerId(@Parameter(description = "Owner's id", example = "1")
             @PathVariable(required = false) Integer ownerId) {
         try {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(reportService.findReportsByOwnerId(ownerId));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorDetails("Reports with this owner id not found!"));
+                    .body(new ErrorDetails("Reports with this dog owner id not found!"));
         }
     }
 }

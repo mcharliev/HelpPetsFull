@@ -9,9 +9,9 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import pro.sky.telegrambot.model.Owner;
-import pro.sky.telegrambot.repository.OwnerRepository;
-import pro.sky.telegrambot.service.OwnerService;
+import pro.sky.telegrambot.model.DogOwner;
+import pro.sky.telegrambot.repository.DogOwnerRepository;
+import pro.sky.telegrambot.service.DogOwnerService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -19,16 +19,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(controllers = OwnerController.class)
+@WebMvcTest(controllers = DogOwnerController.class)
 class OwnerControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private OwnerRepository ownerRepository;
+    private DogOwnerRepository ownerRepository;
 
     @SpyBean
-    private OwnerService ownerService;
+    private DogOwnerService ownerService;
 
 
     @Test
@@ -41,13 +41,13 @@ class OwnerControllerTest {
         ownerObject.put("name", name);
         ownerObject.put("chatId", chatId);
 
-        Owner owner = new Owner();
+        DogOwner owner = new DogOwner();
         owner.setId(id);
         owner.setName(name);
         owner.setChatId(chatId);
 
 
-        when(ownerRepository.save(any(Owner.class))).thenReturn(owner);
+        when(ownerRepository.save(any(DogOwner.class))).thenReturn(owner);
         when(ownerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -66,7 +66,7 @@ class OwnerControllerTest {
         Integer id = 1;
         String name = "Alex";
 
-        Owner owner = new Owner();
+        DogOwner owner = new DogOwner();
         owner.setId(id);
         owner.setName(name);
 
@@ -91,13 +91,13 @@ class OwnerControllerTest {
         ownerObject.put("name", name);
         ownerObject.put("days", days);
 
-        Owner owner = new Owner();
+        DogOwner owner = new DogOwner();
         owner.setId(id);
         owner.setName(name);
         owner.setPeriodExtend(days);
 
 
-        when(ownerRepository.save(any(Owner.class))).thenReturn(owner);
+        when(ownerRepository.save(any(DogOwner.class))).thenReturn(owner);
         when(ownerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders

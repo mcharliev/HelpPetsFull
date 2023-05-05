@@ -10,10 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import pro.sky.telegrambot.model.Dog;
-import pro.sky.telegrambot.model.Owner;
+import pro.sky.telegrambot.model.DogOwner;
 import pro.sky.telegrambot.repository.DogRepository;
 import pro.sky.telegrambot.service.DogService;
-import pro.sky.telegrambot.service.OwnerService;
+import pro.sky.telegrambot.service.DogOwnerService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -31,7 +31,7 @@ class DogControllerTest {
     private DogService dogService;
 
     @MockBean
-    private OwnerService ownerService;
+    private DogOwnerService ownerService;
 
     @Test
     void test_saveDog() throws Exception {
@@ -68,7 +68,7 @@ class DogControllerTest {
         String name = "Boss";
         String breed = "German shepherd";
 
-        Owner owner = new Owner();
+        DogOwner owner = new DogOwner();
         Integer ownerId = 2;
         String ownerName = "Alex";
         owner.setId(ownerId);

@@ -7,13 +7,12 @@ import pro.sky.telegrambot.enam.ProbationaryStatus;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 
 @Entity
-@Table(name = "owners")
-public class Owner {
+@Table(name = "dog_owners")
+public class DogOwner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,9 +23,9 @@ public class Owner {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "dogOwner")
     @JsonIgnore
-    private Collection<Report> reports;
+    private Collection<DogOwnerReport> reports;
 
     @Column(name = "start_probation")
     private LocalDateTime dateOfStartProbation;
@@ -113,11 +112,11 @@ public class Owner {
         this.dogs = dogs;
     }
 
-    public Collection<Report> getReports() {
+    public Collection<DogOwnerReport> getReports() {
         return reports;
     }
 
-    public void setReports(Collection<Report> reports) {
+    public void setReports(Collection<DogOwnerReport> reports) {
         this.reports = reports;
     }
 
@@ -125,7 +124,7 @@ public class Owner {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Owner owner = (Owner) o;
+        DogOwner owner = (DogOwner) o;
         return periodExtend == owner.periodExtend && Objects.equals(id, owner.id) && Objects.equals(chatId, owner.chatId) && Objects.equals(name, owner.name) && Objects.equals(dogs, owner.dogs) && Objects.equals(reports, owner.reports) && Objects.equals(dateOfStartProbation, owner.dateOfStartProbation) && Objects.equals(dateOfEndProbation, owner.dateOfEndProbation) && probationaryStatus == owner.probationaryStatus;
     }
 

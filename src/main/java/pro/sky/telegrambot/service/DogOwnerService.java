@@ -5,39 +5,38 @@ import pro.sky.telegrambot.enam.ProbationaryStatus;
 import pro.sky.telegrambot.exception.AlreadyExistException;
 import pro.sky.telegrambot.exception.NotFoundException;
 import pro.sky.telegrambot.exception.WrongInputDataException;
-import pro.sky.telegrambot.model.Dog;
-import pro.sky.telegrambot.model.Owner;
-import pro.sky.telegrambot.repository.DogRepository;
-import pro.sky.telegrambot.repository.OwnerRepository;
+import pro.sky.telegrambot.model.DogOwner;
+import pro.sky.telegrambot.repository.DogOwnerRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class OwnerService {
-    private final OwnerRepository ownerRepository;
+public class DogOwnerService {
+    private final DogOwnerRepository ownerRepository;
 
 
-    public OwnerService(OwnerRepository ownerRepository) {
+    public DogOwnerService(DogOwnerRepository ownerRepository) {
         this.ownerRepository = ownerRepository;
     }
 
-    public void saveOwner(Owner owner) {
+    public void saveOwner(DogOwner owner) {
         ownerRepository.save(owner);
     }
 
-    public Owner findOwnerByChatId(Long chatId) {
-        return ownerRepository.getOwnerByChatId(chatId);
+    public Optional<DogOwner> findDogOwnerByChatId(Long chatId) {
+        return Optional.ofNullable(ownerRepository.getOwnerByChatId(chatId));
     }
 
-    public List<Owner> findAllOwners() {
+    public List<DogOwner> findAllOwners() {
         return ownerRepository.findAll();
     }
 
-    public Owner saveOwnerByNameAndChatId(String name,
-                                          long chatId) {
-        Owner owner = new Owner();
+    public DogOwner saveOwnerByNameAndChatId(String name,
+                                             long chatId) {
+        DogOwner owner = new DogOwner();
         owner.setName(name);
         owner.setChatId(chatId);
         owner.setDateOfStartProbation(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
@@ -54,27 +53,28 @@ public class OwnerService {
         return ownerRepository.save(owner);
     }
 
-    public Owner findOwnerById(Integer id) {
-        Owner owner = ownerRepository.findOwnerById(id);
+    public DogOwner findOwnerById(Integer id) {
+        DogOwner owner = ownerRepository.findOwnerById(id);
         if (owner == null) {
             throw new NotFoundException();
         }
         return ownerRepository.findOwnerById(id);
     }
 
-    public Owner extendProbationaryPeriod(Integer id, Integer days) {
-        Owner owner = findOwnerById(id);
+    public DogOwner extendProbationaryPeriod(Integer id, Integer days) {
+        DogOwner owner = findOwnerById(id);
         if (days < 0 || days > 15) {
             throw new WrongInputDataException();
         }
         owner.setPeriodExtend(days);
+        owner.setDateOfEndProbation(owner.getDateOfEndProbation().plusDays(days));
         owner.setProbationaryStatus(ProbationaryStatus.EXTENDED);
         ownerRepository.save(owner);
         return owner;
     }
 
-    public Owner changeProbationaryStatus(Integer id, ProbationaryStatus status) {
-        Owner owner = findOwnerById(id);
+    public DogOwner changeProbationaryStatus(Integer id, ProbationaryStatus status) {
+        DogOwner owner = findOwnerById(id);
         owner.setProbationaryStatus(status);
         ownerRepository.save(owner);
         return owner;

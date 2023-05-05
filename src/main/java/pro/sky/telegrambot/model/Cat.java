@@ -24,8 +24,8 @@ public class Cat {
     private String breed;
 
     @OneToOne
-    @JoinColumn(name = "owners_id",referencedColumnName = "id")
-    private Owner owner;
+    @JoinColumn(name = "cat_owner_id",referencedColumnName = "id")
+    private CatOwner owner;
 
     public String getBreed() {
         return breed;
@@ -59,11 +59,11 @@ public class Cat {
         this.name = name;
     }
 
-    public Owner getOwner() {
+    public CatOwner getOwner() {
         return owner;
     }
 
-    public void setOwner(Owner owner) {
+    public void setOwner(CatOwner owner) {
         this.owner = owner;
     }
 

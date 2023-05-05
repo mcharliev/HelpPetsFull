@@ -11,9 +11,9 @@ import java.time.LocalDate;
 @Service
 public class DogService {
     private final DogRepository dogRepository;
-    private final OwnerService ownerService;
+    private final DogOwnerService ownerService;
 
-    public DogService(DogRepository dogRepository, OwnerService ownerService) {
+    public DogService(DogRepository dogRepository, DogOwnerService ownerService) {
         this.dogRepository = dogRepository;
         this.ownerService = ownerService;
     }

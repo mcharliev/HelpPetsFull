@@ -9,8 +9,10 @@ import pro.sky.telegrambot.model.*;
 import pro.sky.telegrambot.repository.CatShelterUsersRepository;
 import pro.sky.telegrambot.repository.DogShelterUsersRepository;
 import pro.sky.telegrambot.repository.UserContextRepository;
-import pro.sky.telegrambot.service.OwnerService;
-import pro.sky.telegrambot.service.ReportService;
+import pro.sky.telegrambot.service.CatOwnerReportService;
+import pro.sky.telegrambot.service.CatOwnerService;
+import pro.sky.telegrambot.service.DogOwnerService;
+import pro.sky.telegrambot.service.DogOwnerReportService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,22 +24,29 @@ public class TextHandler implements Handler {
     private final TelegramBot telegramBot;
     private final DogShelterUsersRepository dogShelterUsersRepository;
     private final CatShelterUsersRepository catShelterUsersRepository;
-    private final OwnerService ownerService;
-    private final ReportService reportService;
+    private final DogOwnerService dogOwnerService;
+    private final CatOwnerService catOwnerService;
+    private final DogOwnerReportService dogOwnerReportService;
+    private final CatOwnerReportService catOwnerReportService;
     private final UserContextRepository userContextRepository;
 
     private final Pattern pattern = Pattern.compile("\\d{11} [А-я]+");
 
     public TextHandler(TelegramBot telegramBot,
-                       CatShelterUsersRepository catShelterUsersRepository,
                        DogShelterUsersRepository dogShelterUsersRepository,
-                       OwnerService ownerService,
-                       ReportService reportService, UserContextRepository userContextRepository) {
+                       CatShelterUsersRepository catShelterUsersRepository,
+                       DogOwnerService dogOwnerService,
+                       CatOwnerService catOwnerService,
+                       DogOwnerReportService dogOwnerReportService,
+                       CatOwnerReportService catOwnerReportService,
+                       UserContextRepository userContextRepository) {
         this.telegramBot = telegramBot;
         this.dogShelterUsersRepository = dogShelterUsersRepository;
         this.catShelterUsersRepository = catShelterUsersRepository;
-        this.ownerService = ownerService;
-        this.reportService = reportService;
+        this.dogOwnerService = dogOwnerService;
+        this.catOwnerService = catOwnerService;
+        this.dogOwnerReportService = dogOwnerReportService;
+        this.catOwnerReportService = catOwnerReportService;
         this.userContextRepository = userContextRepository;
     }
 
@@ -64,58 +73,12 @@ public class TextHandler implements Handler {
             } else {
                 inlineKeyboard.chooseShelterMenu(chatId);
             }
-        }
-        /*если входной текст от пользователя совпал с паттерном вызывается метод findMatchesAndSaveInBd
-         который достается из сообщения имя и телефон и сохраняет эту контактную информацию в бд в таблицу
-         details_service*/
-        else if (matcher.find()) {
+        } else if (matcher.find()) {
             String result = matcher.group(0);
             findMatchesAndSaveInBd(result, chatId);
-        }
-        /*если длина сообщения больше 30 символов значит это сообщение является текстовым отчетом*/
-        else if (text.length() > 30) {
-            Owner owner = ownerService.findOwnerByChatId(chatId);
-            /* если пользователь присылает текстовый отчет в чат и он не зарегестрирован в бд как owner(owner=null)
-             * информирую его, чтобы необходимо сначала зарегестрироваться и выхожу из метода с помощью return*/
-            if (owner == null) {
-                sendMessage(chatId, "Вы не зарегестрированы, пожалуйста обратитесь к волонтеру," +
-                        " чтобы он вас зарегестрировал");
-                return;
-            }
-            Report report = reportService.findLastReportByOwnerId(owner.getId());
-            LocalDateTime dateTimeNow = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-            /* если report = null значит записей в бд нету, я создаю новый отчет и сохраняю его в бд
-             * и информирую овнера, что отчет успешно загрузился, далее выхожу из метода с помощью
-             * return, так как в 89 строке геттер report.getPhotoReport() выдает NullPointerException
-             * не смотря на то, что данный геттер возвращает Optional */
-            if (report == null) {
-                reportService.saveTextInNewReport(text,
-                        owner,
-                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-                sendMessage(chatId, "Вы успешно загрузили текстовый отчет, " +
-                        " пожалуйста не забудьте загрузить фото отчет");
-                return;
-            }
-            /* так как по условию овнеры должны присылать отчеты раз в день, значит отчеты должны быть разграничены по дням,
-             * если настоящая дата isBefore последней даты отчета к который прибавлен один день, текст
-             * сохраняется  в существующий отчет */
-            if (dateTimeNow.isBefore(report.getDateOfLastReport().plusDays(1))) {
-                reportService.saveTextInExistingReport(report,
-                        text,
-                        owner,
-                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-            }
-            /* если настоящая дата isAfter последней даты отчета к который прибавлен один день,
-             *создается новый отчет и текст сохраняется туда*/
-            else if (dateTimeNow.isAfter(report.getDateOfLastReport().plusDays(1))) {
-                reportService.saveTextInNewReport(text,
-                        owner,
-                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-            }
-            sendInfoIfOnlyStringReportLoaded(report.getPhotoReport(), chatId);
-        } else {
-            sendMessage(chatId, " Ваш текстовый отчет недостаточно подробный, пожалуйста заполните отчет" +
-                    "подробнее");
+        } else if (text.length() > 30) {
+            saveDogOwnerTextReport(chatId, text);
+            saveCatOwnerTextReport(chatId, text);
         }
     }
 
@@ -157,6 +120,66 @@ public class TextHandler implements Handler {
         } else {
             sendMessage(chatId, "Вы успешно загрузили текстовый отчет, " +
                     " пожалуйста не забудьте загрузить фото отчет");
+        }
+    }
+
+    private void saveDogOwnerTextReport(Long chatId, String textReport) {
+        LocalDateTime dateTimeNow = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        Optional<DogOwner> optDogOwner = dogOwnerService.findDogOwnerByChatId(chatId);
+        if (optDogOwner.isPresent()) {
+            DogOwner dogOwner = optDogOwner.get();
+            Optional<DogOwnerReport> optDogOwnerReport =
+                    dogOwnerReportService.findLastReportByOwnerId(dogOwner.getId());
+            if (optDogOwnerReport.isPresent()) {
+                DogOwnerReport dogOwnerReport = optDogOwnerReport.get();
+                if (dateTimeNow.isBefore(dogOwnerReport.getDateOfLastReport().plusDays(1))) {
+                    dogOwnerReportService.saveTextInExistingReport(dogOwnerReport,
+                            textReport,
+                            dogOwner,
+                            LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                } else if (dateTimeNow.isAfter(dogOwnerReport.getDateOfLastReport().plusDays(1))) {
+                    dogOwnerReportService.saveTextInNewReport(textReport,
+                            dogOwner,
+                            LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                }
+                sendInfoIfOnlyStringReportLoaded(optDogOwnerReport.get().getPhotoReport(), chatId);
+            } else {
+                dogOwnerReportService.saveTextInNewReport(textReport,
+                        dogOwner,
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                sendMessage(chatId, "Вы успешно загрузили текстовый отчет, " +
+                        " пожалуйста не забудьте загрузить фото отчет ");
+            }
+        }
+    }
+
+    private void saveCatOwnerTextReport(Long chatId, String textReport) {
+        LocalDateTime dateTimeNow = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        Optional<CatOwner> optCatOwner = catOwnerService.findCatOwnerByChatId(chatId);
+        if (optCatOwner.isPresent()) {
+            CatOwner catOwner = optCatOwner.get();
+            Optional<CatOwnerReport> optCatOwnerReport =
+                    catOwnerReportService.findLastReportByOwnerId(catOwner.getId());
+            if (optCatOwnerReport.isPresent()) {
+                CatOwnerReport catOwnerReport = optCatOwnerReport.get();
+                if (dateTimeNow.isBefore(catOwnerReport.getDateOfLastReport().plusDays(1))) {
+                    catOwnerReportService.saveTextInExistingReport(catOwnerReport,
+                            textReport,
+                            catOwner,
+                            LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                } else if (dateTimeNow.isAfter(catOwnerReport.getDateOfLastReport().plusDays(1))) {
+                    catOwnerReportService.saveTextInNewReport(textReport,
+                            catOwner,
+                            LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                }
+                sendInfoIfOnlyStringReportLoaded(optCatOwnerReport.get().getPhotoReport(), chatId);
+            } else {
+                catOwnerReportService.saveTextInNewReport(textReport,
+                        catOwner,
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+                sendMessage(chatId, "Вы успешно загрузили текстовый отчет, " +
+                        " пожалуйста не забудьте загрузить фото отчет ");
+            }
         }
     }
 }
