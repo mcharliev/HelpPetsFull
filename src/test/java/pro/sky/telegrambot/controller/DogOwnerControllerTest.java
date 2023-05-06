@@ -13,6 +13,8 @@ import pro.sky.telegrambot.model.DogOwner;
 import pro.sky.telegrambot.repository.DogOwnerRepository;
 import pro.sky.telegrambot.service.DogOwnerService;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,19 +22,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(controllers = DogOwnerController.class)
-class OwnerControllerTest {
+class DogOwnerControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private DogOwnerRepository ownerRepository;
+    private DogOwnerRepository dogOwnerRepository;
 
     @SpyBean
-    private DogOwnerService ownerService;
+    private DogOwnerService dogOwnerService;
 
 
     @Test
-    void test_saveOwner() throws Exception {
+    void test_saveDogOwner() throws Exception {
         Integer id = 1;
         String name = "Alex";
         Long chatId = 1525L;
@@ -47,11 +49,11 @@ class OwnerControllerTest {
         owner.setChatId(chatId);
 
 
-        when(ownerRepository.save(any(DogOwner.class))).thenReturn(owner);
-        when(ownerRepository.findOwnerById(id)).thenReturn(owner);
+        when(dogOwnerRepository.save(any(DogOwner.class))).thenReturn(owner);
+        when(dogOwnerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/saveOwner/{name}/{chatId}", name, chatId)
+                        .post("/saveDogOwner/{name}/{chatId}", name, chatId)
                         .content(ownerObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -62,7 +64,7 @@ class OwnerControllerTest {
     }
 
     @Test
-    void test_findOwnerById() throws Exception {
+    void test_findDogOwnerById() throws Exception {
         Integer id = 1;
         String name = "Alex";
 
@@ -70,10 +72,10 @@ class OwnerControllerTest {
         owner.setId(id);
         owner.setName(name);
 
-        when(ownerRepository.findOwnerById(id)).thenReturn(owner);
+        when(dogOwnerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/findById/{id}", id)
+                        .get("/findDogOwnerById/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
@@ -94,14 +96,15 @@ class OwnerControllerTest {
         DogOwner owner = new DogOwner();
         owner.setId(id);
         owner.setName(name);
+        owner.setDateOfEndProbation(LocalDateTime.now());
         owner.setPeriodExtend(days);
 
 
-        when(ownerRepository.save(any(DogOwner.class))).thenReturn(owner);
-        when(ownerRepository.findOwnerById(id)).thenReturn(owner);
+        when(dogOwnerRepository.save(any(DogOwner.class))).thenReturn(owner);
+        when(dogOwnerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/extendTrialPeriod/{id}/{days}", id, days)
+                        .put("/extendDogOwnerTrialPeriod/{id}/{days}", id, days)
                         .content(ownerObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

@@ -17,7 +17,6 @@ import java.util.Optional;
 public class DogOwnerService {
     private final DogOwnerRepository ownerRepository;
 
-
     public DogOwnerService(DogOwnerRepository ownerRepository) {
         this.ownerRepository = ownerRepository;
     }

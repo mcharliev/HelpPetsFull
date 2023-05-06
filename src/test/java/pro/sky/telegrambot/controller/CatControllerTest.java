@@ -9,49 +9,52 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import pro.sky.telegrambot.model.Cat;
+import pro.sky.telegrambot.model.CatOwner;
 import pro.sky.telegrambot.model.Dog;
 import pro.sky.telegrambot.model.DogOwner;
-import pro.sky.telegrambot.repository.DogRepository;
-import pro.sky.telegrambot.service.DogService;
-import pro.sky.telegrambot.service.DogOwnerService;
+import pro.sky.telegrambot.repository.CatRepository;
+import pro.sky.telegrambot.service.CatOwnerService;
+import pro.sky.telegrambot.service.CatService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = DogController.class)
-class DogControllerTest {
+@WebMvcTest(controllers = CatController.class)
+class CatControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private DogRepository dogRepository;
+    private CatRepository catRepository;
 
     @SpyBean
-    private DogService dogService;
+    private CatService catService;
 
     @MockBean
-    private DogOwnerService dogOwnerService;
+    private CatOwnerService catOwnerService;
 
     @Test
-    void test_saveDog() throws Exception {
+    void saveCat() throws Exception {
         Integer id = 1;
-        String name = "Boss";
-        String breed = "German shepherd";
+        String name = "Barsik";
+        String breed = "British";
 
         JSONObject dogObject = new JSONObject();
         dogObject.put("name", name);
         dogObject.put("breed", breed);
 
-        Dog dog = new Dog();
-        dog.setId(id);
-        dog.setName(name);
-        dog.setBreed(breed);
-        when(dogRepository.save(any(Dog.class))).thenReturn(dog);
-        when(dogRepository.findDogById(id)).thenReturn(dog);
+        Cat cat = new Cat();
+        cat.setId(id);
+        cat.setName(name);
+        cat.setBreed(breed);
+        when(catRepository.save(any(Cat.class))).thenReturn(cat);
+        when(catRepository.findCatById(id)).thenReturn(cat);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/saveDog")
+                        .post("/saveCat")
                         .content(dogObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -59,36 +62,35 @@ class DogControllerTest {
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.breed").value(breed));
-
     }
 
     @Test
-    void test_assignDogWithOwner() throws Exception {
-        Integer dogId = 1;
-        String name = "Boss";
-        String breed = "German shepherd";
+    void assignDogWithOwner() throws Exception {
+        Integer catId = 1;
+        String name = "Barsik";
+        String breed = "British";
 
-        DogOwner owner = new DogOwner();
+        CatOwner owner = new CatOwner();
         Integer ownerId = 2;
         String ownerName = "Alex";
         owner.setId(ownerId);
         owner.setName(ownerName);
 
-        Dog dog = new Dog();
-        dog.setId(dogId);
-        dog.setName(name);
-        dog.setBreed(breed);
+        Cat cat = new Cat();
+        cat.setId(catId);
+        cat.setName(name);
+        cat.setBreed(breed);
 
-        when(dogRepository.findDogById(dogId)).thenReturn(dog);
-        when(dogOwnerService.findOwnerById(ownerId)).thenReturn(owner);
-        dog.setOwner(owner);
-        when(dogRepository.save(any(Dog.class))).thenReturn(dog);
+        when(catRepository.findCatById(catId)).thenReturn(cat);
+        when(catOwnerService.findOwnerById(ownerId)).thenReturn(owner);
+        cat.setOwner(owner);
+        when(catRepository.save(any(Cat.class))).thenReturn(cat);
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/assignDogWithOwner/{ownerId}/{dogId}", ownerId, dogId)
+                        .put("/assignCatWithOwner/{ownerId}/{catId}", ownerId, catId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.id").value(dogId))
+                .andExpect(jsonPath("$.id").value(catId))
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.breed").value(breed))
                 .andExpect(jsonPath("$.owner.id").value(owner.getId()))
@@ -96,20 +98,20 @@ class DogControllerTest {
     }
 
     @Test
-    void test_findDogById() throws Exception {
+    void findCatById() throws Exception {
         Integer id = 1;
-        String name = "Boss";
-        String breed = "German shepherd";
+        String name = "Barsik";
+        String breed = "British";
 
-        Dog dog = new Dog();
-        dog.setId(id);
-        dog.setName(name);
-        dog.setBreed(breed);
+        Cat cat = new Cat();
+        cat.setId(id);
+        cat.setName(name);
+        cat.setBreed(breed);
 
-        when(dogRepository.findDogById(id)).thenReturn(dog);
+        when(catRepository.findCatById(id)).thenReturn(cat);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/findDogById/{id}", id)
+                        .get("/findCatById/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
