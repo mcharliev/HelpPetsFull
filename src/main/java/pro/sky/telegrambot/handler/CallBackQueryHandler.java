@@ -32,7 +32,6 @@ public class CallBackQueryHandler implements Handler {
         CallbackQuery callbackQuery = update.callbackQuery();
         String data = callbackQuery.data();
         InlineKeyboard infoKeyboard = new InlineKeyboard(telegramBot);
-        System.out.println("Нажата " + callbackQuery.data());
         switch (data) {
             case Button.button1_5:
             case Button.button2_5:

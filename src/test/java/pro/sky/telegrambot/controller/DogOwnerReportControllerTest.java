@@ -59,7 +59,7 @@ class DogOwnerReportControllerTest {
         when(dogOwnerReportRepository.findByDogOwnerId(ownerId)).thenReturn(List.of(report1,report2));
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/dogReports/{ownerId}", ownerId)
+                        .get("/dog-reports/{ownerId}", ownerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())

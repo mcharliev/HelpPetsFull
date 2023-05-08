@@ -1,7 +1,6 @@
 package pro.sky.telegrambot.service;
 
 import org.springframework.stereotype.Service;
-import pro.sky.telegrambot.exception.NotFoundException;
 import pro.sky.telegrambot.model.DogOwner;
 import pro.sky.telegrambot.model.DogOwnerReport;
 import pro.sky.telegrambot.repository.DogOwnerReportRepository;
@@ -71,10 +70,6 @@ public class DogOwnerReportService {
     }
 
     public List<DogOwnerReport> findReportsByOwnerId(Integer ownerId) {
-        List<DogOwnerReport> list = dogOwnerReportRepository.findByDogOwnerId(ownerId);
-        if (list.isEmpty()) {
-            throw new NotFoundException();
-        }
-        return list;
+       return dogOwnerReportRepository.findByDogOwnerId(ownerId);
     }
 }

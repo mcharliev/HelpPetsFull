@@ -19,6 +19,7 @@ import pro.sky.telegrambot.service.CatService;
 import java.time.LocalDate;
 
 @RestController
+@RequestMapping("cats")
 public class CatController {
     private final CatService catService;
 
@@ -40,7 +41,7 @@ public class CatController {
             },
             tags = "Cats"
     )
-    @PostMapping("/saveCat")
+    @PostMapping()
     public ResponseEntity<?> saveCat(@Parameter(description = "Cat's name", example = "Barsik")
                                      @RequestParam(required = false) String name,
                                      @Parameter(description = "Cat's birth date", example = "19.10.2019")
@@ -70,7 +71,7 @@ public class CatController {
             },
             tags = "Cats"
     )
-    @PutMapping("/assignCatWithOwner/{ownerId}/{catId}")
+    @PutMapping("{ownerId}/{catId}")
     public ResponseEntity<?> assignDogWithOwner(@Parameter(description = "Owner's id", example = "1")
                                                 @PathVariable(required = false) Integer ownerId,
                                                 @Parameter(description = "Cat's id", example = "2")
@@ -97,7 +98,7 @@ public class CatController {
             },
             tags = "Cats"
     )
-    @GetMapping("/findCatById/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<?> findCatById(@Parameter(description = "Cat's id", example = "1")
                                          @PathVariable(required = false) Integer id) {
         try {

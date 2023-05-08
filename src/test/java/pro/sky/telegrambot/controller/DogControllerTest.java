@@ -51,7 +51,7 @@ class DogControllerTest {
         when(dogRepository.findDogById(id)).thenReturn(dog);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/saveDog")
+                        .post("/dogs")
                         .content(dogObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -84,7 +84,7 @@ class DogControllerTest {
         dog.setOwner(owner);
         when(dogRepository.save(any(Dog.class))).thenReturn(dog);
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/assignDogWithOwner/{ownerId}/{dogId}", ownerId, dogId)
+                        .put("/dogs/{ownerId}/{dogId}", ownerId, dogId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
@@ -109,7 +109,7 @@ class DogControllerTest {
         when(dogRepository.findDogById(id)).thenReturn(dog);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/findDogById/{id}", id)
+                        .get("/dogs/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())

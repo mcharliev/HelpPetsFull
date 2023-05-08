@@ -54,7 +54,7 @@ class CatControllerTest {
         when(catRepository.findCatById(id)).thenReturn(cat);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/saveCat")
+                        .post("/cats")
                         .content(dogObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -86,7 +86,7 @@ class CatControllerTest {
         cat.setOwner(owner);
         when(catRepository.save(any(Cat.class))).thenReturn(cat);
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/assignCatWithOwner/{ownerId}/{catId}", ownerId, catId)
+                        .put("/cats/{ownerId}/{catId}", ownerId, catId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
@@ -111,7 +111,7 @@ class CatControllerTest {
         when(catRepository.findCatById(id)).thenReturn(cat);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/findCatById/{id}", id)
+                        .get("/cats/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())

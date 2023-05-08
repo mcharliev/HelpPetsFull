@@ -20,18 +20,16 @@ public class CatService {
     }
 
     public Cat saveCatWithNameBirthDateAndBreed(String name,
-                       LocalDate birthDate,
-                       String breed) {
+                                                LocalDate birthDate,
+                                                String breed) {
         Cat cat = new Cat();
         cat.setName(name);
         cat.setBirthDate(birthDate);
         cat.setBreed(breed);
-        catRepository.findAll()
-                .forEach(cats -> {
-                    if (cats.equals(cat)) {
-                        throw new AlreadyExistException();
-                    }
-                });
+        if (cat.equals(catRepository.findByNameAndBirthDateAndBreed(
+                name, birthDate, breed))) {
+            throw new AlreadyExistException();
+        }
         return catRepository.save(cat);
     }
 

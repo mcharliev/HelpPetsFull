@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.annotation.RequestMapping;
 import pro.sky.telegrambot.model.CatOwner;
 import pro.sky.telegrambot.model.CatOwnerReport;
 import pro.sky.telegrambot.model.DogOwner;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CatOwnerReportController.class)
+
 class CatOwnerReportControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -64,7 +66,7 @@ class CatOwnerReportControllerTest {
         when(catOwnerReportRepository.findByCatOwnerId(ownerId)).thenReturn(List.of(report1, report2));
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/catReports/{ownerId}", ownerId)
+                        .get("/cat-reports/{ownerId}", ownerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())

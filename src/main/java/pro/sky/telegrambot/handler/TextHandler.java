@@ -9,10 +9,7 @@ import pro.sky.telegrambot.model.*;
 import pro.sky.telegrambot.repository.CatShelterUsersRepository;
 import pro.sky.telegrambot.repository.DogShelterUsersRepository;
 import pro.sky.telegrambot.repository.UserContextRepository;
-import pro.sky.telegrambot.service.CatOwnerReportService;
-import pro.sky.telegrambot.service.CatOwnerService;
-import pro.sky.telegrambot.service.DogOwnerService;
-import pro.sky.telegrambot.service.DogOwnerReportService;
+import pro.sky.telegrambot.service.*;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,8 +19,8 @@ import java.util.regex.Pattern;
 
 public class TextHandler implements Handler {
     private final TelegramBot telegramBot;
-    private final DogShelterUsersRepository dogShelterUsersRepository;
-    private final CatShelterUsersRepository catShelterUsersRepository;
+    private final DogShelterUserService dogShelterUserService;
+    private final CatShelterUserService catShelterUserService;
     private final DogOwnerService dogOwnerService;
     private final CatOwnerService catOwnerService;
     private final DogOwnerReportService dogOwnerReportService;
@@ -33,16 +30,16 @@ public class TextHandler implements Handler {
     private final Pattern pattern = Pattern.compile("\\d{11} [А-я]+");
 
     public TextHandler(TelegramBot telegramBot,
-                       DogShelterUsersRepository dogShelterUsersRepository,
-                       CatShelterUsersRepository catShelterUsersRepository,
+                       DogShelterUserService dogShelterUserService,
+                       CatShelterUserService catShelterUserService,
                        DogOwnerService dogOwnerService,
                        CatOwnerService catOwnerService,
                        DogOwnerReportService dogOwnerReportService,
                        CatOwnerReportService catOwnerReportService,
                        UserContextRepository userContextRepository) {
         this.telegramBot = telegramBot;
-        this.dogShelterUsersRepository = dogShelterUsersRepository;
-        this.catShelterUsersRepository = catShelterUsersRepository;
+        this.dogShelterUserService = dogShelterUserService;
+        this.catShelterUserService = catShelterUserService;
         this.dogOwnerService = dogOwnerService;
         this.catOwnerService = catOwnerService;
         this.dogOwnerReportService = dogOwnerReportService;
@@ -53,7 +50,7 @@ public class TextHandler implements Handler {
     @Override
     public void handle(Update update) {
         Message message = update.message();
-        Long chatId = message.chat().id();
+        Long chatId = update.message().from().id();
         String text = message.text();
         Matcher matcher = pattern.matcher(text);
         InlineKeyboard inlineKeyboard = new InlineKeyboard(telegramBot);
@@ -79,6 +76,8 @@ public class TextHandler implements Handler {
         } else if (text.length() > 30) {
             saveDogOwnerTextReport(chatId, text);
             saveCatOwnerTextReport(chatId, text);
+        }else {
+            sendMessage(chatId,"Команда не распознана");
         }
     }
 
@@ -93,15 +92,13 @@ public class TextHandler implements Handler {
                 .map(UserContext::isCatShelter)
                 .orElse(false);
         if (dogShelter) {
-            DogShelterUser dogShelterUser = new DogShelterUser();
-            dogShelterUser.setPhoneNumber(phoneNumber);
-            dogShelterUser.setName(name);
-            dogShelterUsersRepository.save(dogShelterUser);
+            dogShelterUserService.addUser(phoneNumber, name);
+            sendMessage(chatId,"Ваша контактная информация сохранена, скоро с вами свяжется один" +
+                    " из наших волонтеров");
         } else if (catShelter) {
-            CatShelterUser catShelterUser = new CatShelterUser();
-            catShelterUser.setPhoneNumber(phoneNumber);
-            catShelterUser.setName(name);
-            catShelterUsersRepository.save(catShelterUser);
+            catShelterUserService.addUser(phoneNumber, name);
+            sendMessage(chatId,"Ваша контактная информация сохранена, скоро с вами свяжется один" +
+                    " из наших волонтеров");
         }
     }
 
@@ -118,7 +115,7 @@ public class TextHandler implements Handler {
         if (image.isPresent()) {
             sendMessage(chatId, "Вы успешно загрузили текстовый отчет");
         } else {
-            sendMessage(chatId, "Вы успешно загрузили текстовый отчет, " +
+            sendMessage(chatId, "Вы успешно загрузили текстовый отчет," +
                     " пожалуйста не забудьте загрузить фото отчет");
         }
     }
@@ -147,8 +144,8 @@ public class TextHandler implements Handler {
                 dogOwnerReportService.saveTextInNewReport(textReport,
                         dogOwner,
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-                sendMessage(chatId, "Вы успешно загрузили текстовый отчет, " +
-                        " пожалуйста не забудьте загрузить фото отчет ");
+                sendMessage(chatId, "Вы успешно загрузили текстовый отчет," +
+                        " пожалуйста не забудьте загрузить фото отчет");
             }
         }
     }
@@ -177,8 +174,8 @@ public class TextHandler implements Handler {
                 catOwnerReportService.saveTextInNewReport(textReport,
                         catOwner,
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-                sendMessage(chatId, "Вы успешно загрузили текстовый отчет, " +
-                        " пожалуйста не забудьте загрузить фото отчет ");
+                sendMessage(chatId, "Вы успешно загрузили текстовый отчет," +
+                        " пожалуйста не забудьте загрузить фото отчет");
             }
         }
     }

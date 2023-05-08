@@ -19,6 +19,7 @@ import pro.sky.telegrambot.service.CatOwnerService;
 import pro.sky.telegrambot.service.DogOwnerService;
 
 @RestController
+@RequestMapping("/cat-owners")
 public class CatOwnerController {
     private final CatOwnerService catOwnerService;
 
@@ -41,7 +42,7 @@ public class CatOwnerController {
             },
             tags = "Cat owners"
     )
-    @PostMapping("/saveCatOwner/{name}/{chatId}")
+    @PostMapping("/{name}/{chatId}")
     public ResponseEntity<?> saveOwner(@Parameter(description = "Owner's name", example = "Alex")
                                        @PathVariable(required = false) String name,
                                        @Parameter(description = "Owner's chatId", example = "321583984")
@@ -70,7 +71,7 @@ public class CatOwnerController {
             },
             tags = "Cat owners"
     )
-    @PutMapping("/extendCatOwnerTrialPeriod/{id}/{days}")
+    @PutMapping("/{id}/{days}")
     public ResponseEntity<?> extendProbationaryPeriod(@Parameter(description = "Owner's id", example = "1")
                                                       @PathVariable(required = false) Integer id,
                                                       @Parameter(description = "Days", example = "5")
@@ -86,7 +87,7 @@ public class CatOwnerController {
         }
     }
 
-    @Operation(summary = "Change dog owner's probationary status",
+    @Operation(summary = "Change cat owner's probationary status",
             responses = {
                     @ApiResponse(
                             responseCode = "202",
@@ -101,7 +102,7 @@ public class CatOwnerController {
             },
             tags = "Cat owners"
     )
-    @PutMapping("/changeCatOwnerStatus")
+    @PutMapping()
     public ResponseEntity<?> changeProbationaryStatus(@Parameter(description = "Owner's id", example = "1")
                                                       @RequestParam(required = false) Integer id,
                                                       @Parameter(description = "Probationary status", example = "PASSED")
@@ -129,7 +130,7 @@ public class CatOwnerController {
             },
             tags = "Cat owners"
     )
-    @GetMapping("/findCatOwnerById/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findOwnerById(@Parameter(description = "Owner's id", example = "1")
                                            @PathVariable(required = false) Integer id) {
         try {

@@ -48,12 +48,11 @@ class DogOwnerControllerTest {
         owner.setName(name);
         owner.setChatId(chatId);
 
-
         when(dogOwnerRepository.save(any(DogOwner.class))).thenReturn(owner);
         when(dogOwnerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .post("/saveDogOwner/{name}/{chatId}", name, chatId)
+                        .post("/dog-owners/{name}/{chatId}", name, chatId)
                         .content(ownerObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -75,7 +74,7 @@ class DogOwnerControllerTest {
         when(dogOwnerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/findDogOwnerById/{id}", id)
+                        .get("/dog-owners/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
@@ -104,7 +103,7 @@ class DogOwnerControllerTest {
         when(dogOwnerRepository.findOwnerById(id)).thenReturn(owner);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/extendDogOwnerTrialPeriod/{id}/{days}", id, days)
+                        .put("/dog-owners/{id}/{days}", id, days)
                         .content(ownerObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

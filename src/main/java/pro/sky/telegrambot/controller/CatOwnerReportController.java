@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pro.sky.telegrambot.exception.NotFoundException;
 import pro.sky.telegrambot.model.DogOwnerReport;
@@ -18,6 +19,7 @@ import pro.sky.telegrambot.model.ErrorDetails;
 import pro.sky.telegrambot.service.CatOwnerReportService;
 
 @RestController
+@RequestMapping("cat-reports")
 public class CatOwnerReportController {
     private final CatOwnerReportService reportService;
 
@@ -39,7 +41,7 @@ public class CatOwnerReportController {
             },
             tags = "Cat owner report"
     )
-    @GetMapping(value = "/catReports/{ownerId}")
+    @GetMapping(value = "/{ownerId}")
     public ResponseEntity<?> findReportsByOwnerId(@Parameter(description = "Owner's id", example = "1")
                                                   @PathVariable(required = false) Integer ownerId) {
         try {

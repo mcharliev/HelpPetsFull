@@ -73,10 +73,6 @@ public class CatOwnerReportService {
     }
 
     public List<CatOwnerReport> findReportsByOwnerId(Integer ownerId) {
-        List<CatOwnerReport> list = catOwnerReportRepository.findByCatOwnerId(ownerId);
-        if (list.isEmpty()) {
-            throw new NotFoundException();
-        }
-        return list;
+        return catOwnerReportRepository.findByCatOwnerId(ownerId);
     }
 }

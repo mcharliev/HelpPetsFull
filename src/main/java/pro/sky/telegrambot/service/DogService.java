@@ -25,12 +25,10 @@ public class DogService {
         dog.setName(name);
         dog.setBirthDate(birthDate);
         dog.setBreed(breed);
-        dogRepository.findAll()
-                .forEach(dogs -> {
-                    if (dogs.equals(dog)) {
-                        throw new AlreadyExistException();
-                    }
-                });
+        if (dog.equals(dogRepository.findByNameAndBirthDateAndBreed(
+                name, birthDate, breed))) {
+            throw new AlreadyExistException();
+        }
         return dogRepository.save(dog);
     }
 

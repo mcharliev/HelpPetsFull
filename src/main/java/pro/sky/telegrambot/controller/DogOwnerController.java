@@ -18,6 +18,7 @@ import pro.sky.telegrambot.model.DogOwner;
 import pro.sky.telegrambot.service.DogOwnerService;
 
 @RestController
+@RequestMapping("/dog-owners")
 public class DogOwnerController {
     private final DogOwnerService dogOwnerService;
 
@@ -40,7 +41,7 @@ public class DogOwnerController {
             },
             tags = "Dog owners"
     )
-    @PostMapping("/saveDogOwner/{name}/{chatId}")
+    @PostMapping("/{name}/{chatId}")
     public ResponseEntity<?> saveOwner(@Parameter(description = "Owner's name", example = "Alex")
                                        @PathVariable(required = false) String name,
                                        @Parameter(description = "Owner's chatId", example = "321583984")
@@ -69,7 +70,7 @@ public class DogOwnerController {
             },
             tags = "Dog owners"
     )
-    @PutMapping("/extendDogOwnerTrialPeriod/{id}/{days}")
+    @PutMapping("/{id}/{days}")
     public ResponseEntity<?> extendProbationaryPeriod(@Parameter(description = "Owner's id", example = "1")
                                                       @PathVariable(required = false) Integer id,
                                                       @Parameter(description = "Days", example = "5")
@@ -100,7 +101,7 @@ public class DogOwnerController {
             },
             tags = "Dog owners"
     )
-    @PutMapping("/changeDogOwnerStatus")
+    @PutMapping()
     public ResponseEntity<?> changeProbationaryStatus(@Parameter(description = "Owner's id", example = "1")
                                                       @RequestParam(required = false) Integer id,
                                                       @Parameter(description = "Probationary status", example = "PASSED")
@@ -128,7 +129,7 @@ public class DogOwnerController {
             },
             tags = "Dog owners"
     )
-    @GetMapping("/findDogOwnerById/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> findOwnerById(@Parameter(description = "Owner's id", example = "1")
                                            @PathVariable(required = false) Integer id) {
         try {
