@@ -28,7 +28,7 @@ public class CallBackQueryHandler implements Handler {
 
     @Override
     public void handle(Update update) {
-        Long chatId = update.callbackQuery().message().chat().id();
+        Long chatId = update.callbackQuery().from().id();
         CallbackQuery callbackQuery = update.callbackQuery();
         String data = callbackQuery.data();
         InlineKeyboard infoKeyboard = new InlineKeyboard(telegramBot);
@@ -224,7 +224,6 @@ public class CallBackQueryHandler implements Handler {
     private void saveContactDetails(Long chatId) {
         sendTextMessage(chatId, "Привет, отправь номер телефона и имя " +
                 "в формате 71112223344 Михаил");
-
     }
 
     private void showDogDatingRules(Long chatId) {

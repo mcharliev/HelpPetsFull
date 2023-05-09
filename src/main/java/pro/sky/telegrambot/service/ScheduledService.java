@@ -102,9 +102,9 @@ public class ScheduledService {
      * предоставляет отчеты плохо и просит исправиться, далее метод меняет статус у всех овнеров
      * на UNSATISFACTORY чтобы метод больше не информировал овнеров о прохождении исп срока
      * */
-    private void informOwnerWhenHeBadReporting(List<DogOwner> DogOwners,
+    private void informOwnerWhenHeBadReporting(List<DogOwner> dogOwners,
                                                List<CatOwner> catOwners) {
-        DogOwners.stream().filter(element -> element.getProbationaryStatus().equals(ProbationaryStatus.BAD_REPORTING))
+        dogOwners.stream().filter(element -> element.getProbationaryStatus().equals(ProbationaryStatus.BAD_REPORTING))
                 .peek(element -> telegramBot.execute(
                         new SendMessage(element.getChatId(), "Дорогой усыновитель, мы заметили, что вы заполняете" +
                                 " отчет не так подробно, как необходимо. Пожалуйста, подойди ответственнее к этому занятию." +
