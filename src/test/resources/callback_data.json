@@ -1,0 +1,8 @@
+{
+  "CallbackQuery": {
+    "from":{
+      "id": 123
+    },
+    "callback_data": "%command%"
+  }
+}
